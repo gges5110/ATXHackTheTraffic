@@ -4,7 +4,7 @@ import sys
 import datetime
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Float
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, scoped_session, sessionmaker
 from sqlalchemy import create_engine
 
 Base = declarative_base()
@@ -75,5 +75,9 @@ class Catalog(Base):
 
 # Configuration
 engine = create_engine('sqlite:///database1.db')
-Base.metadata.create_all(engine)
+Base.metadata.create_all(bind=engine)
+
+db_session = scoped_session(sessionmaker(autocommit=False,
+                                         autoflush=False,
+                                         bind=engine))
 # End of Configuration
