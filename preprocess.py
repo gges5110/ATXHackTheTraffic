@@ -2,21 +2,26 @@ import pandas as pd
 import datetime
 import time as t
 import sys
+from sqlalchemy import create_engine
 
+engine = create_engine('sqlite:///summary.db', echo=True)
 
 # Return a dataframe with Origin, Destination, Time, Weekday, Year, Samples
 # and Average time*Sample, total of 7 columns
 def getTimeWeekdayYear(df):
     weekday = []  # range [0, 6], Monday is 0
     year = []
-    time = []
+    time = [] # from 0 - 2399
     ts = df.timestamp
     row_count = 0
     for row in ts.values:
-        dt = datetime.datetime.strptime(row, '%m/%d/%Y %I:%M:%S %p')
-        time.append(datetime.datetime.strftime(dt, '%H:%M'))
+        # dt = datetime.datetime.strptime(row, '%m/%d/%Y %I:%M:%S %p')
+        # time.append(datetime.datetime.strftime(dt, '%H:%M'))
 
         strip_time = t.strptime(row, '%m/%d/%Y %I:%M:%S %p')
+        hour = strip_time.tm_hour
+        minute = strip_time.tm_min
+        time.extend([hour*60+minute])
         weekday.extend([strip_time.tm_wday])
         year.extend([strip_time.tm_year])
 
@@ -54,7 +59,7 @@ def preprocess(df):
 
     df4 = pd.DataFrame({"Origin": df3.Origin, "Destination": df3.Destination,
                         'Year': df3.Year, 'Weekday': df3.Weekday, 'Time': df3.Time,
-                        'Avg_travel_time': avg_travel_time, 'Sample_count': df3.Total_sample})
+                        'Avg_travel_time': avg_travel_time.apply(int), 'Sample_count': df3.Total_sample})
     return df4
 
 if __name__ == "__main__":
@@ -65,7 +70,9 @@ if __name__ == "__main__":
     df = pd.read_csv(path)
 
     df4 = preprocess(df)
-    df4.to_csv('preprocessed_summary.csv', index=False)
+    # df4.to_csv('preprocessed_summary.csv', index=False)
+    df4.to_sql('Summary', index=True, con=engine)
+    # print df4
     print "Finished preprocessing data!"
 
     duration = t.time() - start_time
