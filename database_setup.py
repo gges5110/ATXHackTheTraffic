@@ -100,7 +100,7 @@ class Catalog(Base):
         }
 
 # Configuration
-engine = create_engine('sqlite:///database1.db')
+engine = create_engine('sqlite:///database.db')
 Base.metadata.create_all(bind=engine)
 
 db_session = scoped_session(sessionmaker(autocommit=False,
