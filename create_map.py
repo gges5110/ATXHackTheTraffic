@@ -11,8 +11,8 @@ class Map:
 		for sensor in self.READER_IDs:
 			adjs = db_session.query(Summary.Destination).filter(Summary.Origin==sensor).distinct(Summary.Destination).all()
 			self.ADJ_INTERSECTIONS[sensor] = [adj[0] for adj in adjs]
-			print sensor
-			print self.ADJ_INTERSECTIONS[sensor]
+			#print sensor
+			#print self.ADJ_INTERSECTIONS[sensor]
 
 def get_map_from_file():
 	infile = open('map.dump','rb')

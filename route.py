@@ -6,9 +6,13 @@ class Route:
 	INFINITY = 1000000
 
 	def __init__(self):
-		#self.myMap = get_map_from_file()
+		travelSensors = db_session.query(TravelSensor).all()
+		self.travelSensors = {x.READER_ID:(x.LATITUDE, x.LONGITUDE) for x in travelSensors}
 		self.myMap = Map()
 		self.myMap.get_map_from_database()
+		
+	def convertCoord(self, route):
+		return [self.travelSensors[n] for n in route]
 
 	def getAdjIntersections(self, node):
 		if node not in self.myMap.ADJ_INTERSECTIONS:
@@ -110,10 +114,28 @@ class Route:
 			ptr = P[ptr]
 			route.insert(0,ptr)
 
-		return {'route': route, 'time': D[t]}
+		return {'route': route, 'coord': self.convertCoord(route), 'time': D[t]}
 
 	def findRoutes(self, s, t, dtime, weekday):
-		return
+		result = [0]*5
+		dayseconds = 60*60*24
+		prev_weekday = weekday-1
+		if prev_weekday < 0:
+			prev_weekday = 6
+
+		if (dtime > 15*60):
+			result[0] = self.findRoute(s, t, dtime-15*60, weekday)
+		else:
+			result[0] = self.findRoute(s, t, dtime-15*60+dayseconds, prev_weekday)
+		for i in range(0,4):
+			dtime = dtime + 15*60
+			if dtime > dayseconds:
+				dtime = dtime - dayseconds
+				weekday = (weekday + 1) % 7
+
+			result[i] = self.findRoute(s, t, dtime, weekday)
+
+		return result
 
 
 
@@ -123,6 +145,7 @@ if __name__ == '__main__':
 	#print R.findRoute(0,3,0,0)
 	print "here"
 	dtime = 16*60*60+30*60
-	result= R.findRoute('lamar_12th', 'lamar_barton_springs', dtime, 0)
-	print result
-	print result['time'] - dtime
+	results= R.findRoutes('lamar_12th', 'lamar_barton_springs', dtime, 0)
+	print results
+	#print [result['time'] for result in results]
+	#print R.convertCoord(result['route'])
