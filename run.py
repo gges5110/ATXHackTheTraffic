@@ -6,7 +6,7 @@ import os, util
 
 from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, User, TravelSensor
+from database_setup import Base, User, TravelSensor, Summary
 
 engine = create_engine('sqlite:///database1.db')
 Base.metadata.bind = engine

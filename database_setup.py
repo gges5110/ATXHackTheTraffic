@@ -29,6 +29,32 @@ class User(Base):
             'picture' : self.picture
         }
 
+# Class Summary
+class Summary(Base):
+    __tablename__ = 'Summary'
+
+    ID = Column(Integer, primary_key=True)
+    AVG_TRAVEL_TIME = Column(Float, nullable=False)
+    DESTINATION = Column(String(250), nullable=False)
+    ORIGIN = Column(String(250), nullable=False)
+    SAMPLE_COUNT = Column(Integer, nullable=False)
+    TIME = Column(DateTime, nullable=False)
+    WEEKDAY = Column(Integer, nullable=False)
+    YEAR = Column(Integer, nullable=False)
+
+    @property
+    def serialize(self):
+        return {
+            'ID': self.ID,
+            'AVG_TRAVEL_TIME': self.AVG_TRAVEL_TIME,
+            'DESTINATION': self.DESTINATION,
+            'ORIGIN': self.ORIGIN,
+            'SAMPLE_COUNT': self.SAMPLE_COUNT,
+            'TIME': self.TIME,
+            'WEEKDAY': self.WEEKDAY,
+            'YEAR': self.YEAR
+        }
+
 # Class
 class TravelSensor(Base):
     __tablename__ = 'TravelSensor'
