@@ -6,7 +6,11 @@
   /* Always set the map height explicitly to define the size of the div
    * element that contains the map. */
   #map {
-    height: 100%;
+    position:relative;
+    height: 600px;
+    width: 700px;
+    margin: auto;
+
   }
   /* Optional: Makes the sample page fill the window. */
   html, body {
@@ -41,11 +45,9 @@
       </select>
     </div>
   </div>
-</div>
 <script>
 var $origin = $("select[name='origin']");
 var $destination = $("select[name='destination']");
-console.log("outside");
 function origin_chg(selectObj_o) {
     $destination.find('option').prop("disabled", false);
     var selectedItem = selectObj_o.value;
@@ -61,7 +63,7 @@ function dest_chg(selectObj_d) {
     };
   };
 </script>
-
+</div>
 <div id="map"></div>
 <script>
   // This example creates a 2-pixel-wide red polyline showing the path of William
@@ -92,6 +94,7 @@ function dest_chg(selectObj_d) {
     flightPath.setMap(map);
   }
 </script>
+
 <script async defer
 src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7twsePKQ3XBR62UaoY1DiROnh_Fxf5CA&callback=initMap">
 </script>
