@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Travel Time Prediction{% endblock %}
 {% block head %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <style>
   /* Always set the map height explicitly to define the size of the div
    * element that contains the map. */
@@ -16,7 +17,43 @@
 </style>
 {% endblock %}
 {% block content %}
-<h1>ATX Hack the Traffic</h1>
+<!-- <h1>ATX Hack the Traffic</h1> -->
+<div class='container'>
+  <div class="row">
+    <div class="form-group">
+      <label for="origin">Select list:</label>
+        <select class="form-control" id="origin">
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+        </select>
+    </div>
+  </div>
+  <div class='row'>
+    <div class="form-group">
+      <label for="destination">Select list:</label>
+      <select class="form-control" id="destination">
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+      </select>
+    </div>
+  </div>
+</div>
+<script>
+var origin_var = $('select[id= 'origin']');
+var destination_var = $('select[id= 'destination']');
+
+$('#origin').change(function() {
+    $destination.find('option').prop('disabled', false);
+    var selectedItem = $(this).val();
+    if (selectedItem) {
+      $destination.find('option[value="' + selectedItem + '"]').prop("disabled", true);
+    }
+});
+</script>
 <div id="map"></div>
 <script>
   // This example creates a 2-pixel-wide red polyline showing the path of William
