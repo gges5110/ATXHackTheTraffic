@@ -23,8 +23,9 @@
 {% block content %}
 <!-- <h1>ATX Hack the Traffic</h1> -->
 <div class='container'>
+  <form action="/travelTimePrediction" method="POST">
   <div class="row">
-    <div class="form-group">
+    <div class="form-group" id='origin_point'>
       <label for="origin">Select Origin:</label>
         <select class="form-control" name="origin" onchange="origin_chg(this)">
           {% for sensor in travelSensors %}
@@ -32,9 +33,8 @@
           {% endfor %}
         </select>
     </div>
-  </div>
-  <div class='row'>
-    <div class="form-group">
+
+    <div class="form-group" id='destination_point'>
       <label for="destination">Select Destination:</label>
       <select class="form-control" name="destination" onchange="dest_chg(this)">
         {% for sensor in travelSensors %}
@@ -44,9 +44,13 @@
           <option value='{{sensor.ATD_SENSOR_ID}}'>{{sensor.READER_ID}}</option>
         {% endif %}
         {% endfor %}
-      </select>      
+      </select>
     </div>
+
   </div>
+  <input type="submit" value="Click Me!"/>
+</form>
+
 <script>
 var $origin = $("select[name='origin']");
 var $destination = $("select[name='destination']");
@@ -64,6 +68,10 @@ function dest_chg(selectObj_d) {
         $origin.find('option[value="' + selectedItem + '"]').prop("disabled", true);
     };
   };
+function subForms(){
+  document.getElementById("origin_point").submit();
+  document.getElementById("destination_point").submit();
+};
 </script>
 </div>
 <div id="map"></div>
