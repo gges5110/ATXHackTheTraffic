@@ -22,38 +22,39 @@
   <div class="row">
     <div class="form-group">
       <label for="origin">Select list:</label>
-        <select class="form-control" id="origin">
-          <option>1</option>
-          <option>2</option>
-          <option>3</option>
-          <option>4</option>
+        <select class="form-control" name="origin" onchange="my_func(this)">
+        <option value='1'>1</option>
+        <option value='2'>2</option>
+        <option value='3'>3</option>
+        <option value='4'>4</option>
         </select>
     </div>
   </div>
   <div class='row'>
     <div class="form-group">
       <label for="destination">Select list:</label>
-      <select class="form-control" id="destination">
-        <option>1</option>
-        <option>2</option>
-        <option>3</option>
-        <option>4</option>
+      <select class="form-control" name="destination" >
+        <option value='1'>1</option>
+        <option value='2'>2</option>
+        <option value='3'>3</option>
+        <option value='4'>4</option>
       </select>
     </div>
   </div>
 </div>
 <script>
-var origin_var = $('select[id= 'origin']');
-var destination_var = $('select[id= 'destination']');
-
-$('#origin').change(function() {
-    $destination.find('option').prop('disabled', false);
-    var selectedItem = $(this).val();
+var $origin = $("select[name='origin']");
+var $destination = $("select[name='destination']");
+console.log("outside");
+function my_func(selectObj) {
+    $destination.find('option').prop("disabled", false);
+    var selectedItem = selectObj.value;
     if (selectedItem) {
-      $destination.find('option[value="' + selectedItem + '"]').prop("disabled", true);
+        $destination.find('option[value="' + selectedItem + '"]').prop("disabled", true);
     }
-});
+};
 </script>
+
 <div id="map"></div>
 <script>
   // This example creates a 2-pixel-wide red polyline showing the path of William
