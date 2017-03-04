@@ -29,7 +29,7 @@
       <label for="origin">Select Origin:</label>
         <select class="form-control" name="origin" onchange="origin_chg(this)">
           {% for sensor in travelSensors %}
-          <option value='{{sensor.ATD_SENSOR_ID}}'>{{sensor.READER_ID}}</option>
+          <option value='{{sensor.READER_ID}}'>{{sensor.READER_ID}}</option>
           {% endfor %}
         </select>
     </div>
@@ -39,9 +39,9 @@
       <select class="form-control" name="destination" onchange="dest_chg(this)">
         {% for sensor in travelSensors %}
         {% if loop.index == 1 %}
-          <option value='{{sensor.ATD_SENSOR_ID}}' disabled>{{sensor.READER_ID}}</option>
+          <option value='{{sensor.READER_ID}}' disabled>{{sensor.READER_ID}}</option>
         {% else %}
-          <option value='{{sensor.ATD_SENSOR_ID}}'>{{sensor.READER_ID}}</option>
+          <option value='{{sensor.READER_ID}}'>{{sensor.READER_ID}}</option>
         {% endif %}
         {% endfor %}
       </select>
@@ -50,6 +50,14 @@
   </div>
   <input type="submit" value="Click Me!"/>
 </form>
+
+<div class="">
+  {% if time_pre %}
+    {{time_pre.route}}
+    {{time_pre['coord']}}
+    {{time_pre.time}}
+  {% endif %}
+</div>
 
 <script>
 var $origin = $("select[name='origin']");
