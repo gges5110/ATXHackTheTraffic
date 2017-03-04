@@ -21,8 +21,8 @@
 <div class='container'>
   <div class="row">
     <div class="form-group">
-      <label for="origin">Select list:</label>
-        <select class="form-control" name="origin" onchange="my_func(this)">
+      <label for="origin">Select Origin:</label>
+        <select class="form-control" name="origin" onchange="origin_chg(this)">
         <option value='1'>1</option>
         <option value='2'>2</option>
         <option value='3'>3</option>
@@ -32,9 +32,9 @@
   </div>
   <div class='row'>
     <div class="form-group">
-      <label for="destination">Select list:</label>
-      <select class="form-control" name="destination" >
-        <option value='1'>1</option>
+      <label for="destination">Select Destination:</label>
+      <select class="form-control" name="destination" onchange="dest_chg(this)">
+        <option value='1' disabled>1</option>
         <option value='2'>2</option>
         <option value='3'>3</option>
         <option value='4'>4</option>
@@ -46,13 +46,20 @@
 var $origin = $("select[name='origin']");
 var $destination = $("select[name='destination']");
 console.log("outside");
-function my_func(selectObj) {
+function origin_chg(selectObj_o) {
     $destination.find('option').prop("disabled", false);
-    var selectedItem = selectObj.value;
+    var selectedItem = selectObj_o.value;
     if (selectedItem) {
         $destination.find('option[value="' + selectedItem + '"]').prop("disabled", true);
-    }
-};
+    };
+  }
+function dest_chg(selectObj_d) {
+    $origin.find('option').prop("disabled", false);
+    var selectedItem = selectObj_d.value;
+    if (selectedItem) {
+        $origin.find('option[value="' + selectedItem + '"]').prop("disabled", true);
+    };
+  };
 </script>
 
 <div id="map"></div>
