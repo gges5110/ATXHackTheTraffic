@@ -22,16 +22,16 @@
 {% endblock %}
 {% block content %}
 <!-- <h1>ATX Hack the Traffic</h1> -->
-<div class='container'>
+<div class="container">
   <form action="/travelTimePrediction" method="POST">
   <div class="row">
     <div class="form-group" id='origin_point'>
       <label for="origin">Select Origin:</label>
-        <select class="form-control" name="origin" onchange="origin_chg(this)">
-          {% for sensor in travelSensors %}
-          <option value='{{sensor.READER_ID}}'>{{sensor.READER_ID}}</option>
-          {% endfor %}
-        </select>
+      <select class="form-control" name="origin" onchange="origin_chg(this)">
+        {% for sensor in travelSensors %}
+        <option value='{{sensor.READER_ID}}'>{{sensor.READER_ID}}</option>
+        {% endfor %}
+      </select>
     </div>
 
     <div class="form-group" id='destination_point'>
@@ -47,59 +47,82 @@
       </select>
     </div>
 
+    <div class="form-group">
+      <label for="start_time">Select Start Time:</label>
+      <select class="form-control" name="start_time">
+        {% for startTime in startTimeList %}
+          <option value='{{loop.index}}'>{{startTime}}</option>
+        {% endfor %}
+      </select>
+
+    </div>
+    <input type="submit" class="btn btn-success" value="Estimate">
   </div>
-  <input type="submit" value="Click Me!"/>
-</form>
 
-<div class="">
-  {% if time_pre %}
-    {{time_pre.route}}
-    {{time_pre['coord']}}
-    {{time_pre.time}}
-  {% endif %}
+  </form>
+
+  <div class="row">
+    {% if time_pre %}
+      <!-- {{time_pre.route}}
+      {{time_pre['coord']}} -->
+      Estimate time: {{ time_pre.time / 60 }} (minutes)
+    {% endif %}
+  </div>
+
+  <script>
+  var $origin = $("select[name='origin']");
+  var $destination = $("select[name='destination']");
+  function origin_chg(selectObj_o) {
+      $destination.find('option').prop("disabled", false);
+      var selectedItem = selectObj_o.value;
+      if (selectedItem) {
+          $destination.find('option[value="' + selectedItem + '"]').prop("disabled", true);
+      };
+    }
+  function dest_chg(selectObj_d) {
+      $origin.find('option').prop("disabled", false);
+      var selectedItem = selectObj_d.value;
+      if (selectedItem) {
+          $origin.find('option[value="' + selectedItem + '"]').prop("disabled", true);
+      };
+    };
+  </script>
+
+  <div class="row">
+    <div id="map" style="margin-top: 10px"></div>
+  </div>
 </div>
 
 <script>
-var $origin = $("select[name='origin']");
-var $destination = $("select[name='destination']");
-function origin_chg(selectObj_o) {
-    $destination.find('option').prop("disabled", false);
-    var selectedItem = selectObj_o.value;
-    if (selectedItem) {
-        $destination.find('option[value="' + selectedItem + '"]').prop("disabled", true);
-    };
-  }
-function dest_chg(selectObj_d) {
-    $origin.find('option').prop("disabled", false);
-    var selectedItem = selectObj_d.value;
-    if (selectedItem) {
-        $origin.find('option[value="' + selectedItem + '"]').prop("disabled", true);
-    };
-  };
-function subForms(){
-  document.getElementById("origin_point").submit();
-  document.getElementById("destination_point").submit();
-};
-</script>
-</div>
-<div id="map"></div>
-<script>
-  // This example creates a 2-pixel-wide red polyline showing the path of William
-  // Kingsford Smith's first trans-Pacific flight between Oakland, CA, and
-  // Brisbane, Australia.
-
   function initMap() {
     var map = new google.maps.Map(document.getElementById('map'), {
-      zoom: 3,
-      center: {lat: 0, lng: -180},
-      mapTypeId: 'terrain'
+      zoom: 12,
+      center: {lat: 30.2672, lng: -97.7431},
+      mapTypeId: 'roadmap'
     });
+    {% if time_pre %}
+    index = {{ time_pre['coord']|length }};
+    console.log('index = ' + index);
+    console.log({{time_pre['coord'][0][1]}});
+    {% endif %}
 
     var flightPlanCoordinates = [
-      {lat: 37.772, lng: -122.214},
-      {lat: 21.291, lng: -157.821},
-      {lat: -18.142, lng: 178.431},
-      {lat: -27.467, lng: 153.027}
+    {% if time_pre %}
+        {% for route in time_pre['coord'] %}
+            {% if loop.index0 < loop.length - 1 %}
+                {
+                    lat: {{time_pre['coord'][loop.index0][0]}},
+                    lng: {{time_pre['coord'][loop.index0][1]}}
+                },
+            {% else %}
+                {
+                    lat: {{time_pre['coord'][loop.index0][0]}},
+                    lng: {{time_pre['coord'][loop.index0][1]}}
+                }
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
     ];
     var flightPath = new google.maps.Polyline({
       path: flightPlanCoordinates,

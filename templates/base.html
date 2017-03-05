@@ -45,9 +45,13 @@
     <div id='fix-stupid-navbar-covering' class='row' style='height: 80px'></div>
 
     <div id="content" style="height:100%; width:100%;">{% block content %}{% endblock %}</div>
-    <div id="footer">
+    <div id="footer" class="row">
       {% block footer %}
-      &copy; Copyright 2017 by <a href="#">you</a>.
+      <div class="col-xs-12">
+            <footer>
+                <p>&copy; Copyright 2017 by <a href="#">you</a>.</p>
+            </footer>
+        </div>      
       {% endblock %}
     </div>
 
