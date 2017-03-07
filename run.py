@@ -6,31 +6,25 @@ import os, util
 
 from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, User, TravelSensor
-
-engine = create_engine('sqlite:///database1.db')
-Base.metadata.bind = engine
-
-DBSession = sessionmaker(bind=engine)
-session = DBSession()
+from database_setup import Base, User, TravelSensor, Summary
 
 # Routing setup
-from views.route1 import route1
-from views.route2 import route2
-from views.route3 import route3
-app = Flask(__name__)
-app.register_blueprint(route1)
-app.register_blueprint(route2)
-app.register_blueprint(route3)
+from views.index import index
+from views.problemStatement import problemStatement
+from views.travelTimePrediction import travelTimePrediction
+from views.historyStats import historyStats
+from views.about import aboutUs
 
-@app.route('/', methods=['GET'])
-def index():
-    user = session.query(User).first()
-    return_from_util = util.example_function()
-    return render_template('index.html', user=user, msg=return_from_util)
+app = Flask(__name__)
+app.register_blueprint(index)
+app.register_blueprint(problemStatement)
+app.register_blueprint(travelTimePrediction)
+app.register_blueprint(historyStats)
+app.register_blueprint(aboutUs)
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     app.debug = True
     port = int(os.environ.get("PORT", 8000))
+
     app.run(host = '0.0.0.0', port = port)

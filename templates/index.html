@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title></title>
-    </head>
-    <body>
-        <h1>ATX Hack the Traffic</h1>
-        <p>Username: {{user.name}}</p>
-        <p>Message: {{msg}}</p>
-    </body>
-</html>
+{% extends "base.html" %}
+{% block title %}Index{% endblock %}
+{% block content %}
+<!-- <h1>ATX Hack the Traffic</h1> -->
+<p>Username: {{user.name}}</p>
+<p>Message: {{msg}}</p>
+{% endblock %}

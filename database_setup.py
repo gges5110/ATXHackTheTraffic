@@ -4,7 +4,7 @@ import sys
 import datetime
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Float
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, scoped_session, sessionmaker
 from sqlalchemy import create_engine
 
 Base = declarative_base()
@@ -27,6 +27,32 @@ class User(Base):
             'name' : self.name,
             'email' : self.email,
             'picture' : self.picture
+        }
+
+# Class Summary
+class Summary(Base):
+    __tablename__ = 'Summary'
+
+    index = Column(Integer, primary_key=True)
+    Avg_Travel_Time = Column(Float, nullable=False)
+    Destination = Column(String(250), nullable=False)
+    Origin = Column(String(250), nullable=False)
+    Sample_count = Column(Integer, nullable=False)
+    Time = Column(Integer, nullable=False)
+    Weekday = Column(Integer, nullable=False)
+    Year = Column(Integer, nullable=False)
+
+    @property
+    def serialize(self):
+        return {
+            'index': self.index,
+            'Avg_Travel_Time': self.Avg_Travel_Time,
+            'Destination': self.Destination,
+            'Origin': self.Origin,
+            'Sample_count': self.Sample_count,
+            'Time': self.Time,
+            'Weekday': self.Weekday,
+            'Year': self.Year
         }
 
 # Class
@@ -74,6 +100,10 @@ class Catalog(Base):
         }
 
 # Configuration
-engine = create_engine('sqlite:///database1.db')
-Base.metadata.create_all(engine)
+engine = create_engine('sqlite:///database.db')
+Base.metadata.create_all(bind=engine)
+
+db_session = scoped_session(sessionmaker(autocommit=False,
+                                         autoflush=False,
+                                         bind=engine))
 # End of Configuration

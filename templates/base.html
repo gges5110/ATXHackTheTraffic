@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <link href="{{ url_for('static', filename='styles/css/bootstrap.min.css')}}" rel="stylesheet">
+    {% block head %}
+    <!-- <link rel="stylesheet" href="style.css" /> -->
+    <title>{% block title %}{% endblock %} - ATX Hack the Traffic</title>
+    {% endblock %}
+    <style>
+    #footer {
+       position:absolute;
+       bottom:0;
+    }
+    </style>
+  </head>
+  <body>
+    <!--fixed navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/">ATX Hack the Traffic</a>
+        </div>
+        <div id="navbarNav" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="/problemStatement">Problem Statement</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/travelTimePrediction">Travel Time Prediction</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/historyStats">History Stats</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/aboutUs">About Us</a>
+            </li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+    <div id='fix-stupid-navbar-covering' class='row' style='height: 80px'></div>
+
+    <div id="content" style="height:100%; width:100%;">{% block content %}{% endblock %}</div>
+    <div id="footer" class="row">
+      {% block footer %}
+      <div class="col-xs-12">
+            <footer>
+                <p>&copy; Copyright 2017 by <a href="#">you</a>.</p>
+            </footer>
+        </div>      
+      {% endblock %}
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="{{url_for('static', filename='styles/js/bootstrap.min.js')}}"></script>
+  </body>
+</html>
