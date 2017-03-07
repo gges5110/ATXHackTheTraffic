@@ -10,7 +10,7 @@ class Route:
 		self.travelSensors = {x.READER_ID:(x.LATITUDE, x.LONGITUDE) for x in travelSensors}
 		self.myMap = Map()
 		self.myMap.get_map_from_database()
-		
+
 	def convertCoord(self, route):
 		return [self.travelSensors[n] for n in route]
 
@@ -34,26 +34,26 @@ class Route:
 
 		# first attempt
 		summary = db_session.query(Summary).filter(
-			Summary.Origin == s, 
-			Summary.Destination == t, 
+			Summary.Origin == s,
+			Summary.Destination == t,
 			Summary.Weekday == weekday,
 			Summary.Time >= dtime/60,
 			Summary.Time <= dtime/60+60,
 			).order_by(Summary.Time).all()
-		
-		
+
+
 		if len(summary) == 0:
 			if dtime >= 23*3600:  # after 11pm, look at the next day
 				summary = db_session.query(Summary).filter(
-					Summary.Origin == s, 
-					Summary.Destination == t, 
+					Summary.Origin == s,
+					Summary.Destination == t,
 					Summary.Weekday == weekday+1
 					).order_by(Summary.Time).all()
 
 		if len(summary) == 0:
 			summary = db_session.query(Summary).filter(
-				Summary.Origin == s, 
-				Summary.Destination == t, 
+				Summary.Origin == s,
+				Summary.Destination == t,
 				Summary.Weekday >= beg_day,
 				Summary.Weekday <= end_day,
 				Summary.Time >= dtime/60,
@@ -67,9 +67,9 @@ class Route:
 			return self.INFINITY
 
 		looked_years = set()
-		
+
 		total = 0
-		
+
 		for ss in summary:
 			if ss.Year not in looked_years:
 				looked_years |= set([ss.Year])
@@ -101,7 +101,7 @@ class Route:
 				if v in visited:
 					continue
 
-				newt =  D[u] + self.getTravelTime(u,v,D[u],weekday) 
+				newt =  D[u] + self.getTravelTime(u,v,D[u],weekday)
 				if (v not in D) or (newt < D[v]):
 					Q[v] = newt
 					D[v] = newt
@@ -137,6 +137,7 @@ class Route:
 
 		return result
 
+time_prediction = Route()
 
 
 if __name__ == '__main__':
