@@ -1,4 +1,7 @@
 # ATXHackTheTraffic
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/4a7ff1eb19fa47ec98984815942a20c0)](https://www.codacy.com/app/gges5110/ATXHackTheTraffic?utm_source=github.com&utm_medium=referral&utm_content=gges5110/ATXHackTheTraffic&utm_campaign=badger)
+
 This is a project for travel time prediction in Austin, TX using the dataset provided by the City of Austin.
 
 # Server Routes
