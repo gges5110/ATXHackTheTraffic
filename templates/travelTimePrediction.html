@@ -29,7 +29,11 @@
       <label for="origin">Select Origin:</label>
       <select class="form-control" name="origin" onchange="origin_chg(this)">
         {% for sensor in travelSensors %}
+        {% if origin and sensor.READER_ID == origin %}
+        <option value='{{sensor.READER_ID}}' selected="selected">{{sensor.READER_ID}}</option>
+        {% else %}
         <option value='{{sensor.READER_ID}}'>{{sensor.READER_ID}}</option>
+        {% endif %}
         {% endfor %}
       </select>
     </div>
@@ -40,6 +44,8 @@
         {% for sensor in travelSensors %}
         {% if loop.index == 1 %}
           <option value='{{sensor.READER_ID}}' disabled>{{sensor.READER_ID}}</option>
+        {% elif destination and sensor.READER_ID == destination %}
+          <option value='{{sensor.READER_ID}}' selected="selected">{{sensor.READER_ID}}</option>
         {% else %}
           <option value='{{sensor.READER_ID}}'>{{sensor.READER_ID}}</option>
         {% endif %}
@@ -51,7 +57,11 @@
       <label for="start_time">Select Start Time:</label>
       <select class="form-control" name="start_time">
         {% for startTime in startTimeList %}
+        {% if start_time and loop.index == start_time %}
+          <option value='{{loop.index}}' selected="selected">{{startTime}}</option>
+        {% else %}
           <option value='{{loop.index}}'>{{startTime}}</option>
+        {% endif %}
         {% endfor %}
       </select>
 
@@ -104,6 +114,7 @@
     index = {{ time_pre['coord']|length }};
     console.log('index = ' + index);
     console.log({{time_pre['coord'][0][1]}});
+    console.log({{start_time}});
     {% endif %}
 
     var flightPlanCoordinates = [

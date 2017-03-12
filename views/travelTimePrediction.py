@@ -25,8 +25,9 @@ def travelTimePrediction_function():
         # }
         origin = request.form['origin']
         destination = request.form['destination']
-        minutes = (int(request.form['start_time']) - 1) * 15
+        start_time = int(request.form['start_time'])
+        minutes = (start_time - 1) * 15
         time_pre = time_prediction.findRoute(origin, destination, 0, 0)
-        return render_template("travelTimePrediction.html", travelSensors=travelSensors, time_pre=time_pre, startTimeList=startTimeList)
+        return render_template("travelTimePrediction.html", travelSensors=travelSensors, time_pre=time_pre, startTimeList=startTimeList, origin = origin, destination = destination, start_time = start_time)
     else:
         return render_template("travelTimePrediction.html", travelSensors=travelSensors, time_pre=None, startTimeList=startTimeList)
