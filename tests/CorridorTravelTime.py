@@ -6,7 +6,6 @@ from sqlalchemy import create_engine
 import numpy as np
 import csv
 import matplotlib.pyplot as plt
-import math as m
 
 # Configuration
 engine = create_engine('sqlite:///../database.db')
@@ -107,21 +106,23 @@ for test in summary_test2:
 #print traveltime[0][0], samples[0][0]
 
 
-average_traveltime=traveltime/(samples+0.0001)
-percentage_traveltime=average_traveltime/(lowest_traveltime+0.1)
+average_traveltime = traveltime/(samples+0.0001)
+percentage_traveltime = average_traveltime/(lowest_traveltime+0.1)
 Error=np.zeros(len(Lamar))
 
 standard_deviation=np.std(average_traveltime, axis=1)
+standard_deviation_rep = np.tile(standard_deviation, (96,1)).transpose()
 
-mean= avg=np.mean(average_traveltime, axis=1)
+mean = np.mean(average_traveltime, axis=1)
+mean_rep = np.tile(mean, (96,1)).transpose()
 
-var_traveltime=(average_traveltime-mean)/standard_deviation
+zscore_traveltime = (average_traveltime-mean_rep)/standard_deviation_rep
 
 
 plt.xlim(0,95)
 plt.ylim(0,19) #Or whateverplt.xlim(-30,80)
 
-plt.imshow(var_traveltime, cmap='hot', interpolation= 'catrom')
+plt.imshow(zscore_traveltime, cmap='hot', interpolation= 'catrom')
 plt.colorbar()
 plt.show()
 
