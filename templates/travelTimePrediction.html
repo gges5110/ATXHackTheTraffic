@@ -7,8 +7,8 @@
    * element that contains the map. */
   #map {
     position:relative;
-    height: 600px;
-    width: 700px;
+    height: 500px;
+    width: auto;
     margin: auto;
 
   }
@@ -23,23 +23,33 @@
 {% block content %}
 <!-- <h1>ATX Hack the Traffic</h1> -->
 <div class="container">
-  <form action="/travelTimePrediction" method="POST">
-  <div class="row">
-    <div class="form-group" id='origin_point'>
+  <div class="col-md-8">
+    <div id="map" style="margin-top: 10px"></div>
+  </div>
+  <div class= 'col-md-4'>
+    <form action="/travelTimePrediction" method="POST">
+      <div class="row">
+        <div class="form-group" id='origin_point'>
       <label for="origin">Select Origin:</label>
       <select class="form-control" name="origin" onchange="origin_chg(this)">
         {% for sensor in travelSensors %}
+        {% if origin and sensor.READER_ID == origin %}
+        <option value='{{sensor.READER_ID}}' selected="selected">{{sensor.READER_ID}}</option>
+        {% else %}
         <option value='{{sensor.READER_ID}}'>{{sensor.READER_ID}}</option>
+        {% endif %}
         {% endfor %}
       </select>
     </div>
 
-    <div class="form-group" id='destination_point'>
+      <div class="form-group" id='destination_point'>
       <label for="destination">Select Destination:</label>
       <select class="form-control" name="destination" onchange="dest_chg(this)">
         {% for sensor in travelSensors %}
         {% if loop.index == 1 %}
           <option value='{{sensor.READER_ID}}' disabled>{{sensor.READER_ID}}</option>
+        {% elif destination and sensor.READER_ID == destination %}
+          <option value='{{sensor.READER_ID}}' selected="selected">{{sensor.READER_ID}}</option>
         {% else %}
           <option value='{{sensor.READER_ID}}'>{{sensor.READER_ID}}</option>
         {% endif %}
@@ -47,28 +57,31 @@
       </select>
     </div>
 
-    <div class="form-group">
+      <div class="form-group">
       <label for="start_time">Select Start Time:</label>
       <select class="form-control" name="start_time">
         {% for startTime in startTimeList %}
+        {% if start_time and loop.index == start_time %}
+          <option value='{{loop.index}}' selected="selected">{{startTime}}</option>
+        {% else %}
           <option value='{{loop.index}}'>{{startTime}}</option>
+        {% endif %}
         {% endfor %}
       </select>
 
     </div>
-    <input type="submit" class="btn btn-success" value="Estimate">
+      <input type="submit" class="btn btn-success" value="Estimate">
+    </div>
+    </form>
+
+    <div class="row">
+      {% if time_pre %}
+        <!-- {{time_pre.route}}
+        {{time_pre['coord']}} -->
+        Estimate time: {{ time_pre.time / 60 }} (minutes)
+        {% endif %}
+    </div>
   </div>
-
-  </form>
-
-  <div class="row">
-    {% if time_pre %}
-      <!-- {{time_pre.route}}
-      {{time_pre['coord']}} -->
-      Estimate time: {{ time_pre.time / 60 }} (minutes)
-    {% endif %}
-  </div>
-
   <script>
   var $origin = $("select[name='origin']");
   var $destination = $("select[name='destination']");
@@ -87,10 +100,6 @@
       };
     };
   </script>
-
-  <div class="row">
-    <div id="map" style="margin-top: 10px"></div>
-  </div>
 </div>
 
 <script>
@@ -104,6 +113,7 @@
     index = {{ time_pre['coord']|length }};
     console.log('index = ' + index);
     console.log({{time_pre['coord'][0][1]}});
+    console.log({{start_time}});
     {% endif %}
 
     var flightPlanCoordinates = [
