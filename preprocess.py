@@ -1,5 +1,4 @@
 import pandas as pd
-import datetime
 import time as t
 import sys
 from sqlalchemy import create_engine

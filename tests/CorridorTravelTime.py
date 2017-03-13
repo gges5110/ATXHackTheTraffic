@@ -6,6 +6,7 @@ from sqlalchemy import create_engine
 import numpy as np
 import csv
 import matplotlib.pyplot as plt
+import FindRoadConnectToCorridor
 
 # Configuration
 engine = create_engine('sqlite:///../database.db')
@@ -43,47 +44,19 @@ db_session = scoped_session(sessionmaker(autocommit=False,
 #     Weekday = Column(Integer, nullable=False)
 #     Year = Column(Integer, nullable=False)
 
-# Test for TravelSensor data model
-travelSensorsCount = db_session.query(TravelSensor).count()
-print "Travel Sensor Entry Count:", travelSensorsCount
+Corridor_name = 'lamar'
 
-travelSensors_test1 = db_session.query(TravelSensor).all()
-for sensor in travelSensors_test1:
-    print sensor.READER_ID, sensor.LATITUDE, sensor.LONGITUDE
+# Import relevant TravelSensor data
+travelSensors = db_session.query(TravelSensor).filter(TravelSensor.READER_ID.contains(Corridor_name)).all()
 
-primary_st = "WILLIAM CANNON DR"
-print ""
-print "Travel Sensor with PRIMARY_ST =", primary_st
-travelSensors_test2 = db_session.query(TravelSensor).filter_by(PRIMARY_ST=primary_st).all()
-# If you use .all(), you will get a list of TravelSensor objects.
-for sensor in travelSensors_test2:
-    print sensor.READER_ID, sensor.LATITUDE, sensor.LONGITUDE
+# Import relevant Summary data
+data_summary= db_session.query(Summary.Avg_Travel_Time, Summary.Origin, Summary.Destination, Summary.Time) \
+.filter(Summary.Origin.contains(Corridor_name)).filter(Summary.Destination.contains(Corridor_name)).filter_by(Year=2016).filter_by(Weekday=0).all()
 
-lat = 30.3
-print ""
-print "Fetch the first sensor with latitude greater than", lat
-travelSensors_test3 = db_session.query(TravelSensor).filter(TravelSensor.LATITUDE > lat).first()
-# Notice that if you use .first(), it will be an object and not a list.
-print travelSensors_test3.READER_ID, travelSensors_test3.LATITUDE, travelSensors_test3.LONGITUDE
+roads_connected_to_corridor = FindRoadConnectToCorridor(travelSensors)
 
-print ""
-# Test for Summary data model
-summmary_test = db_session.query(Summary).count()
-print "Summary table entries =", summmary_test
-
-
-#Use \ at the end for a line break.
-#summmary_test1 = db_session.query(Summary.Avg_Travel_Time, Summary.Destination) \
-#    .filter_by(Time=120).filter_by(Origin='51st_mueller').all()
-#for test in summmary_test1:
-#    print test.Destination, test.Avg_Travel_Time
-
-summary_test2 = db_session.query(Summary.Avg_Travel_Time, Summary.Origin, Summary.Destination, Summary.Time) \
-    .filter(Summary.Origin.contains('amar')).filter(Summary.Destination.contains('amar')).filter_by(Year=2016).filter_by(Weekday=0).all()
-#for test in summary_test2:
-#    print (test.Avg_Travel_Time, test.Origin, test.Destination)
 Lamar = ['Parmer','Braker','Rundberg','Airport', 'Koenig','51st', '45th', '38th', '29th', '24th', 'mlk', '12th' ,'6th','5th', 'Riverside' ,'Barton_Springs', 'Lamar_Square',  'Oltorf','Blue_Bonnet', 'and_Manchca_Barton_skyway', 'BrodieOaks']
-#Lamar = ['6th','5th']
+
 traveltime=np.zeros((len(Lamar), 96))
 samples = np.zeros((len(Lamar), 4*24))
 average_traveltime = np.zeros((len(Lamar), 4*24))
@@ -93,10 +66,10 @@ var_traveltime = np.zeros((len(Lamar), 96))
 
 print("traveltime")
 
-for test in summary_test2:
+for test in data_summary:
     for i in range(len(Lamar)-1):
         #print test.Origin.strip("Lamar_"), Lamar[i]
-        if ((test.Origin.lower()) ==("lamar_")+Lamar[i].lower()) and (test.Destination.lower()==('lamar_')+Lamar[i+1].lower()):
+        if ((test.Origin.lower()) ==(Corridor_name + "_")+Lamar[i].lower()) and (test.Destination.lower()==(Corridor_name + '_')+Lamar[i+1].lower()):
             print test.Origin, test.Destination, test.Avg_Travel_Time, test.Time
             traveltime[i][test.Time/15] += test.Avg_Travel_Time
             samples[i][test.Time/15] +=1
@@ -141,4 +114,3 @@ abc.writerows(average_traveltime)
 b=open('test1.csv', 'w')
 abc=csv.writer(b)
 abc.writerows(var_traveltime)
-
