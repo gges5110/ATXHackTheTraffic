@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 import numpy as np
 import csv
 import matplotlib.pyplot as plt
-import FindRoadConnectToCorridor
+import CorridorConnection as cc
 
 # Configuration
 engine = create_engine('sqlite:///../database.db')
@@ -53,23 +53,23 @@ travelSensors = db_session.query(TravelSensor).filter(TravelSensor.READER_ID.con
 data_summary= db_session.query(Summary.Avg_Travel_Time, Summary.Origin, Summary.Destination, Summary.Time) \
 .filter(Summary.Origin.contains(Corridor_name)).filter(Summary.Destination.contains(Corridor_name)).filter_by(Year=2016).filter_by(Weekday=0).all()
 
-roads_connected_to_corridor = FindRoadConnectToCorridor(travelSensors)
+corridor_intersection = cc.FindRoadConnectToCorridor(travelSensors)
 
-Lamar = ['Parmer','Braker','Rundberg','Airport', 'Koenig','51st', '45th', '38th', '29th', '24th', 'mlk', '12th' ,'6th','5th', 'Riverside' ,'Barton_Springs', 'Lamar_Square',  'Oltorf','Blue_Bonnet', 'and_Manchca_Barton_skyway', 'BrodieOaks']
+#Lamar = ['Parmer','Braker','Rundberg','Airport', 'Koenig','51st', '45th', '38th', '29th', '24th', 'mlk', '12th' ,'6th','5th', 'Riverside' ,'Barton_Springs', 'Lamar_Square',  'Oltorf','Blue_Bonnet', 'and_Manchca_Barton_skyway', 'BrodieOaks']
 
-traveltime=np.zeros((len(Lamar), 96))
-samples = np.zeros((len(Lamar), 4*24))
-average_traveltime = np.zeros((len(Lamar), 4*24))
-lowest_traveltime =np.zeros((len(Lamar), 96))
-percentage_traveltime=np.zeros((len(Lamar), 96))
-var_traveltime = np.zeros((len(Lamar), 96))
+traveltime=np.zeros((len(corridor_intersection), 96))
+samples = np.zeros((len(corridor_intersection), 4*24))
+average_traveltime = np.zeros((len(corridor_intersection), 4*24))
+lowest_traveltime =np.zeros((len(corridor_intersection), 96))
+percentage_traveltime=np.zeros((len(corridor_intersection), 96))
+var_traveltime = np.zeros((len(corridor_intersection), 96))
 
 print("traveltime")
 
 for test in data_summary:
-    for i in range(len(Lamar)-1):
+    for i in range(len(corridor_intersection)-1):
         #print test.Origin.strip("Lamar_"), Lamar[i]
-        if ((test.Origin.lower()) ==(Corridor_name + "_")+Lamar[i].lower()) and (test.Destination.lower()==(Corridor_name + '_')+Lamar[i+1].lower()):
+        if ((test.Origin.lower()) ==corridor_intersection[i]) and (test.Destination.lower()==corridor_intersection[i+1]):
             print test.Origin, test.Destination, test.Avg_Travel_Time, test.Time
             traveltime[i][test.Time/15] += test.Avg_Travel_Time
             samples[i][test.Time/15] +=1
@@ -81,7 +81,7 @@ for test in data_summary:
 
 average_traveltime = traveltime/(samples+0.0001)
 percentage_traveltime = average_traveltime/(lowest_traveltime+0.1)
-Error=np.zeros(len(Lamar))
+Error=np.zeros(len(corridor_intersection))
 
 standard_deviation=np.std(average_traveltime, axis=1)
 standard_deviation_rep = np.tile(standard_deviation, (96,1)).transpose()
