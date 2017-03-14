@@ -44,39 +44,43 @@ db_session = scoped_session(sessionmaker(autocommit=False,
 #     Weekday = Column(Integer, nullable=False)
 #     Year = Column(Integer, nullable=False)
 
-Corridor_name = 'lamar'
+Corridor_name = 'burnet'
+year_selected = 2016
+weekday_selected = 0 # Monday is 0
 
 # Import relevant TravelSensor data
 travelSensors = db_session.query(TravelSensor).filter(TravelSensor.READER_ID.contains(Corridor_name)).all()
 
 # Import relevant Summary data
 data_summary= db_session.query(Summary.Avg_Travel_Time, Summary.Origin, Summary.Destination, Summary.Time) \
-.filter(Summary.Origin.contains(Corridor_name)).filter(Summary.Destination.contains(Corridor_name)).filter_by(Year=2016).filter_by(Weekday=0).all()
+.filter(Summary.Origin.contains(Corridor_name)).filter(Summary.Destination.contains(Corridor_name)).filter_by(Year=year_selected).filter_by(Weekday=weekday_selected).all()
 
-corridor_intersection = cc.FindRoadConnectToCorridor(travelSensors)
+corridor_intersection_all = cc.FindRoadConnectToCorridor(travelSensors)
+corridor_intersection_all = list(reversed(corridor_intersection_all))
+corridor_intersection = cc.CheckConnection(data_summary, corridor_intersection_all)
+
 
 #Lamar = ['Parmer','Braker','Rundberg','Airport', 'Koenig','51st', '45th', '38th', '29th', '24th', 'mlk', '12th' ,'6th','5th', 'Riverside' ,'Barton_Springs', 'Lamar_Square',  'Oltorf','Blue_Bonnet', 'and_Manchca_Barton_skyway', 'BrodieOaks']
 
-traveltime=np.zeros((len(corridor_intersection), 96))
-samples = np.zeros((len(corridor_intersection), 4*24))
-average_traveltime = np.zeros((len(corridor_intersection), 4*24))
-lowest_traveltime =np.zeros((len(corridor_intersection), 96))
-percentage_traveltime=np.zeros((len(corridor_intersection), 96))
-var_traveltime = np.zeros((len(corridor_intersection), 96))
+# Initialize variables
+traveltime=np.zeros((len(corridor_intersection)-1, 96))
+samples = np.zeros((len(corridor_intersection)-1, 96))
+average_traveltime = np.zeros((len(corridor_intersection)-1, 96))
+lowest_traveltime =np.zeros((len(corridor_intersection)-1, 96))
+percentage_traveltime=np.zeros((len(corridor_intersection)-1, 96))
+var_traveltime = np.zeros((len(corridor_intersection)-1, 96))
 
 print("traveltime")
 
 for test in data_summary:
     for i in range(len(corridor_intersection)-1):
-        #print test.Origin.strip("Lamar_"), Lamar[i]
+
         if ((test.Origin.lower()) ==corridor_intersection[i]) and (test.Destination.lower()==corridor_intersection[i+1]):
-            print test.Origin, test.Destination, test.Avg_Travel_Time, test.Time
             traveltime[i][test.Time/15] += test.Avg_Travel_Time
-            samples[i][test.Time/15] +=1
+            samples[i][test.Time/15] += 1
+            print test.Origin, test.Destination, traveltime[i][test.Time/15], test.Time
             if test.Avg_Travel_Time<lowest_traveltime[i][test.Time/15] or lowest_traveltime[i][test.Time/15] == 0:
                 lowest_traveltime[i] = test.Avg_Travel_Time
-
-#print traveltime[0][0], samples[0][0]
 
 
 average_traveltime = traveltime/(samples+0.0001)
@@ -93,7 +97,7 @@ zscore_traveltime = (average_traveltime-mean_rep)/standard_deviation_rep
 
 
 plt.xlim(0,95)
-plt.ylim(0,19) #Or whateverplt.xlim(-30,80)
+plt.ylim(0,len(corridor_intersection)-1) #Or whateverplt.xlim(-30,80)
 
 plt.imshow(zscore_traveltime, cmap='hot', interpolation= 'catrom')
 plt.colorbar()
