@@ -44,7 +44,8 @@ db_session = scoped_session(sessionmaker(autocommit=False,
 #     Weekday = Column(Integer, nullable=False)
 #     Year = Column(Integer, nullable=False)
 
-Corridor_name = 'burnet'
+# Input variables
+Corridor_name = 'lamar'
 year_selected = 2016
 weekday_selected = 0 # Monday is 0
 
@@ -55,66 +56,80 @@ travelSensors = db_session.query(TravelSensor).filter(TravelSensor.READER_ID.con
 data_summary= db_session.query(Summary.Avg_Travel_Time, Summary.Origin, Summary.Destination, Summary.Time) \
 .filter(Summary.Origin.contains(Corridor_name)).filter(Summary.Destination.contains(Corridor_name)).filter_by(Year=year_selected).filter_by(Weekday=weekday_selected).all()
 
-corridor_intersection_all = cc.FindRoadConnectToCorridor(travelSensors)
-corridor_intersection_all = list(reversed(corridor_intersection_all))
-corridor_intersection = cc.CheckConnection(data_summary, corridor_intersection_all)
+# Find the list of roads connected to the corridor
+corridor_intersection_all_for, direction_for = cc.FindRoadConnectToCorridor(travelSensors)
+corridor_intersection_all_rev = list(reversed(corridor_intersection_all_for))
+corridor_intersection_for = cc.CheckConnection(data_summary, corridor_intersection_all_for)
+corridor_intersection_rev = cc.CheckConnection(data_summary, corridor_intersection_all_rev)
+if direction_for == 'Northbound':
+    direction_rev = 'Southbound'
+elif direction_for == 'Eastbound':
+    direction_rev = 'Westbound'
+
+# Output variables. These are the variables necessary for the heat maps
+Normalized_traveltime = [] # The first item will contain normalized travel time for either Northbound or Eastbound
+                           # The second item will contain normalized travel time for either Southbound or Westbound
+Direction = [direction_for, direction_rev]
+Corridor_intersection = [corridor_intersection_for, corridor_intersection_rev] # The name of the intersection
+
+for corridor_intersection in [corridor_intersection_for, corridor_intersection_rev]:
+
+    # Initialize variables
+    traveltime = np.zeros((len(corridor_intersection)-1, 96))
+    samples = np.zeros((len(corridor_intersection)-1, 96))
+    average_traveltime = np.zeros((len(corridor_intersection)-1, 96))
+    lowest_traveltime = np.zeros((len(corridor_intersection)-1, 96))
+    percentage_traveltime = np.zeros((len(corridor_intersection)-1, 96))
+    var_traveltime = np.zeros((len(corridor_intersection)-1, 96))
+
+    #print("traveltime")
+
+    for test in data_summary:
+        for i in range(len(corridor_intersection)-1):
+
+            if ((test.Origin.lower()) ==corridor_intersection[i]) and (test.Destination.lower()==corridor_intersection[i+1]):
+                traveltime[i][test.Time/15] += test.Avg_Travel_Time
+                samples[i][test.Time/15] += 1
+                #print test.Origin, test.Destination, traveltime[i][test.Time/15], test.Time
+                if test.Avg_Travel_Time<lowest_traveltime[i][test.Time/15] or lowest_traveltime[i][test.Time/15] == 0:
+                    lowest_traveltime[i] = test.Avg_Travel_Time
 
 
-#Lamar = ['Parmer','Braker','Rundberg','Airport', 'Koenig','51st', '45th', '38th', '29th', '24th', 'mlk', '12th' ,'6th','5th', 'Riverside' ,'Barton_Springs', 'Lamar_Square',  'Oltorf','Blue_Bonnet', 'and_Manchca_Barton_skyway', 'BrodieOaks']
+    average_traveltime = traveltime/(samples+0.0001)
+    percentage_traveltime = average_traveltime/(lowest_traveltime+0.1)
+    Error=np.zeros(len(corridor_intersection))
 
-# Initialize variables
-traveltime=np.zeros((len(corridor_intersection)-1, 96))
-samples = np.zeros((len(corridor_intersection)-1, 96))
-average_traveltime = np.zeros((len(corridor_intersection)-1, 96))
-lowest_traveltime =np.zeros((len(corridor_intersection)-1, 96))
-percentage_traveltime=np.zeros((len(corridor_intersection)-1, 96))
-var_traveltime = np.zeros((len(corridor_intersection)-1, 96))
+    standard_deviation=np.std(average_traveltime, axis=1)
+    standard_deviation_rep = np.tile(standard_deviation, (96,1)).transpose()
 
-print("traveltime")
+    mean = np.mean(average_traveltime, axis=1)
+    mean_rep = np.tile(mean, (96,1)).transpose()
 
-for test in data_summary:
-    for i in range(len(corridor_intersection)-1):
+    zscore_traveltime = (average_traveltime-mean_rep)/standard_deviation_rep
 
-        if ((test.Origin.lower()) ==corridor_intersection[i]) and (test.Destination.lower()==corridor_intersection[i+1]):
-            traveltime[i][test.Time/15] += test.Avg_Travel_Time
-            samples[i][test.Time/15] += 1
-            print test.Origin, test.Destination, traveltime[i][test.Time/15], test.Time
-            if test.Avg_Travel_Time<lowest_traveltime[i][test.Time/15] or lowest_traveltime[i][test.Time/15] == 0:
-                lowest_traveltime[i] = test.Avg_Travel_Time
+    Normalized_traveltime.append(zscore_traveltime)
 
 
-average_traveltime = traveltime/(samples+0.0001)
-percentage_traveltime = average_traveltime/(lowest_traveltime+0.1)
-Error=np.zeros(len(corridor_intersection))
+    # plot results
+    """plt.xlim(0,95)
+    plt.ylim(0,len(corridor_intersection)-1) #Or whateverplt.xlim(-30,80)
 
-standard_deviation=np.std(average_traveltime, axis=1)
-standard_deviation_rep = np.tile(standard_deviation, (96,1)).transpose()
+    plt.imshow(zscore_traveltime, cmap='hot', interpolation= 'catrom')
+    plt.colorbar()
+    plt.show()
 
-mean = np.mean(average_traveltime, axis=1)
-mean_rep = np.tile(mean, (96,1)).transpose()
+    #plt.imshow( average_traveltime, cmap='hot', interpolation= 'catrom')
+    #plt.colorbar()
+    #plt.show()
 
-zscore_traveltime = (average_traveltime-mean_rep)/standard_deviation_rep
+    #plt.imshow(percentage_traveltime, cmap='hot', interpolation= 'catrom')
+    #plt.colorbar()
+    #plt.show()
 
+    b=open('test.csv', 'w')
+    abc=csv.writer(b)
+    abc.writerows(average_traveltime)
 
-plt.xlim(0,95)
-plt.ylim(0,len(corridor_intersection)-1) #Or whateverplt.xlim(-30,80)
-
-plt.imshow(zscore_traveltime, cmap='hot', interpolation= 'catrom')
-plt.colorbar()
-plt.show()
-
-plt.imshow( average_traveltime, cmap='hot', interpolation= 'catrom')
-plt.colorbar()
-plt.show()
-
-plt.imshow(percentage_traveltime, cmap='hot', interpolation= 'catrom')
-plt.colorbar()
-plt.show()
-
-b=open('test.csv', 'w')
-abc=csv.writer(b)
-abc.writerows(average_traveltime)
-
-b=open('test1.csv', 'w')
-abc=csv.writer(b)
-abc.writerows(var_traveltime)
+    b=open('test1.csv', 'w')
+    abc=csv.writer(b)
+    abc.writerows(var_traveltime)"""
