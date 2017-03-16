@@ -72,6 +72,10 @@ Normalized_traveltime = [] # The first item will contain normalized travel time 
 Direction = [direction_for, direction_rev]
 Corridor_intersection = [corridor_intersection_for, corridor_intersection_rev] # The name of the intersection
 
+#Normalized_traveltime: contains Z-score oof traveltime (drawing color base on this.) N[0]: N or E N[1]: S bound
+#Direction: D[0]: "Northbound" or "Eastbound"
+#Corridor_intersection: C[0] = ['lamar&1','lamar&2',...,'lamar&last']
+
 for corridor_intersection in [corridor_intersection_for, corridor_intersection_rev]:
 
     # Initialize variables
