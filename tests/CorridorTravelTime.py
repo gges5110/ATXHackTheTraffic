@@ -8,7 +8,7 @@ import csv
 import matplotlib.pyplot as plt
 import CorridorConnection as cc
 
-def corridor_traveltime(Corridor_name,year_selected,weekday_selected):
+def corridor_traveltime(Corridor_name, year_selected, weekday_selected):
     # Configuration
     engine = create_engine('sqlite:///../database.db')
     Base.metadata.create_all(bind=engine)
@@ -46,9 +46,9 @@ def corridor_traveltime(Corridor_name,year_selected,weekday_selected):
     #     Year = Column(Integer, nullable=False)
 
     # Input variables
-    Corridor_name = 'lamar'
-    year_selected = 2016
-    weekday_selected = 0 # Monday is 0
+    #Corridor_name = 'lamar'
+    #year_selected = 2016
+    #weekday_selected = 0 # Monday is 0
 
     # Import relevant TravelSensor data
     travelSensors = db_session.query(TravelSensor).filter(TravelSensor.READER_ID.contains(Corridor_name)).all()
@@ -70,9 +70,11 @@ def corridor_traveltime(Corridor_name,year_selected,weekday_selected):
     # Output variables. These are the variables necessary for the heat maps
     Normalized_traveltime = [] # The first item will contain normalized travel time for either Northbound or Eastbound
                                # The second item will contain normalized travel time for either Southbound or Westbound
+    Average_traveltime = []
     Direction = [direction_for, direction_rev]
     Corridor_intersection = [corridor_intersection_for, corridor_intersection_rev] # The name of the intersection
-    # Normalized_traveltime: contains Z-score oof traveltime (drawing color base on this.) N[0]: N or E N[1]: S bound
+    # Normalized_traveltime: contains Z-score of traveltime (drawing color base on this.) N[0]: N or E N[1]: S bound
+    # Average_traveltime: contains raw traveltime (drawing color base on this.) N[0]: N or E N[1]: S bound
     # Direction: D[0]: "Northbound" or "Eastbound"
     # Corridor_intersection: C[0] = ['lamar&1','lamar&2',...,'lamar&last']
     for corridor_intersection in [corridor_intersection_for, corridor_intersection_rev]:
@@ -110,9 +112,10 @@ def corridor_traveltime(Corridor_name,year_selected,weekday_selected):
 
         zscore_traveltime = (average_traveltime-mean_rep)/standard_deviation_rep
 
+        Average_traveltime.append(average_traveltime)
         Normalized_traveltime.append(zscore_traveltime)
 
-    return Normalized_traveltime, Direction, Corridor_intersection
+    return Normalized_traveltime, Average_traveltime, Direction, Corridor_intersection
     # plot results
     """plt.xlim(0,95)
     plt.ylim(0,len(corridor_intersection)-1) #Or whateverplt.xlim(-30,80)
