@@ -1,5 +1,4 @@
 from context import Base, TravelSensor, Summary
-
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, scoped_session, sessionmaker
 from sqlalchemy import create_engine
@@ -10,7 +9,7 @@ import CorridorConnection as cc
 
 def corridor_traveltime(Corridor_name, year_selected, weekday_selected):
     # Configuration
-    engine = create_engine('sqlite:///../database.db')
+    engine = create_engine('sqlite:///database.db')
     Base.metadata.create_all(bind=engine)
 
     # Create a new database session
@@ -46,9 +45,9 @@ def corridor_traveltime(Corridor_name, year_selected, weekday_selected):
     #     Year = Column(Integer, nullable=False)
 
     #Input variables
-    Corridor_name = 'lamar'
-    year_selected = 2016
-    weekday_selected = 0 # Monday is 0
+    #Corridor_name = 'lamar'
+    #year_selected = 2016
+    #weekday_selected = 0 # Monday is 0
 
     # Import relevant TravelSensor data
     travelSensors = db_session.query(TravelSensor).filter(TravelSensor.READER_ID.contains(Corridor_name)).all()
@@ -56,7 +55,6 @@ def corridor_traveltime(Corridor_name, year_selected, weekday_selected):
     # Import relevant Summary data
     data_summary= db_session.query(Summary.Avg_Travel_Time, Summary.Origin, Summary.Destination, Summary.Time) \
     .filter(Summary.Origin.contains(Corridor_name)).filter(Summary.Destination.contains(Corridor_name)).filter_by(Year=year_selected).filter_by(Weekday=weekday_selected).all()
-
     # Find the list of roads connected to the corridor
     corridor_intersection_all_for, direction_for = cc.FindRoadConnectToCorridor(travelSensors)
     corridor_intersection_all_rev = list(reversed(corridor_intersection_all_for))
@@ -114,7 +112,7 @@ def corridor_traveltime(Corridor_name, year_selected, weekday_selected):
 
         Average_traveltime.append(average_traveltime)
         Normalized_traveltime.append(zscore_traveltime)
-
+    
     return [Normalized_traveltime, Average_traveltime, Direction, Corridor_intersection]
     # plot results
     """plt.xlim(0,95)
