@@ -33,7 +33,7 @@
         <div class="form-group">
           <label for="start_time">Select Time:</label>
           <select class="form-control" name="time">
-            {% for startTime in startTimeList %}
+            {% for startTime in timeList %}
               {% if start_time and loop.index == start_time %}
                 <option value='{{loop.index}}' selected="selected">{{startTime}}</option>
               {% else %}
@@ -56,7 +56,6 @@
           </select>
         </div>
 
-        <h2>Select Year</h2>
         <input type="submit" class="btn btn-success" value="Get History Stats">
       </div>
     </form>
@@ -96,7 +95,6 @@
     } else {
       trafficDataColor[{{loop.index0}}] = '#33CC33';
     }
-
 
     {% endfor %}
 
