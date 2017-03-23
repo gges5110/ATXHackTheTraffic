@@ -3,3 +3,4 @@ config.py
 *.pyc
 .idea/
 *.db
+.DS_Store

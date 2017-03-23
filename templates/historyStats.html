@@ -1,43 +1,117 @@
 {% extends "base.html" %}
 {% block title %}History Stats{% endblock %}
 {% block head %}
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script type="text/javascript">
-  google.charts.load('current', {'packages':['bar']});
-  google.charts.setOnLoadCallback(drawStuff);
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<style>
+  /* Always set the map height explicitly to define the size of the div
+   * element that contains the map. */
+  #map {
+    position:relative;
+    height: 500px;
+    width: auto;
+    margin: auto;
 
-  function drawStuff() {
-    var data = new google.visualization.arrayToDataTable([
-      ['Move', 'Percentage'],
-      ["King's pawn (e4)", 44],
-      ["Queen's pawn (d4)", 31],
-      ["Knight to King 3 (Nf3)", 12],
-      ["Queen's bishop pawn (c4)", 10],
-      ['Other', 3]
-    ]);
-
-    var options = {
-      title: 'Chess opening moves',
-      width: 900,
-      legend: { position: 'none' },
-      chart: { subtitle: 'popularity by percentage' },
-      axes: {
-        x: {
-          0: { side: 'top', label: 'White to move'} // Top x-axis.
-        }
-      },
-      bar: { groupWidth: "90%" }
-    };
-
-    var chart = new google.charts.Bar(document.getElementById('top_x_div'));
-    // Convert the Classic options to Material options.
-    chart.draw(data, google.charts.Bar.convertOptions(options));
-  };
-</script>
+  }
+  /* Optional: Makes the sample page fill the window. */
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+</style>
 {% endblock %}
+
+
 {% block content %}
-<h1>ATX Hack the Traffic</h1>
-<body>
-  <div id="top_x_div" style="width: 900px; height: 500px;"></div>
-</body>
+<div class="container">
+  <div class="col-md-8">
+    <div id="map" style="margin-top: 10px"></div>
+  </div>
+  <div class= 'col-md-4'>
+    <form action="/historyStats" method="GET">
+      <div class="row">
+        <div class="form-group">
+          <label for="start_time">Select Time:</label>
+          <select class="form-control" name="time">
+            {% for startTime in timeList %}
+              {% if start_time and loop.index == start_time %}
+                <option value='{{loop.index}}' selected="selected">{{startTime}}</option>
+              {% else %}
+                <option value='{{loop.index}}'>{{startTime}}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="weekday_input">Select Weekday:</label>
+          <select class="form-control" name="weekday" id="weekday_input">
+            {% for _weekday in weekdayList %}
+              {% if weekday and loop.index0 == weekday %}
+                <option value='{{loop.index0}}' selected="selected">{{_weekday}}</option>
+              {% else %}
+                <option value='{{loop.index0}}'>{{_weekday}}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+        </div>
+
+        <input type="submit" class="btn btn-success" value="Get History Stats">
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function initMap() {
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 11,
+      center: {lat: 30.2672, lng: -97.7431},
+      mapTypeId: 'roadmap'
+    });
+
+    var traffic_data_length = {{traffic_list|length}};
+    var trafficDataCoordinates = [traffic_data_length];
+    var trafficDataColor = [traffic_data_length];
+
+    {% for traffic_data in traffic_list %}
+
+    trafficDataCoordinates[{{loop.index0}}] = [
+      {
+        lat: {{traffic_data.origin.LATITUDE}},
+        lng: {{traffic_data.origin.LONGITUDE}}
+      },
+      {
+        lat: {{traffic_data.destination.LATITUDE}},
+        lng: {{traffic_data.destination.LONGITUDE}}
+      }
+    ];
+
+    var avg_time = {{traffic_data.Avg_Travel_Time}};
+    if (avg_time > 200) {
+      trafficDataColor[{{loop.index0}}] = '#FF0000';
+    } else if (avg_time < 200 && avg_time > 100) {
+      trafficDataColor[{{loop.index0}}] = '#FF9900';
+    } else {
+      trafficDataColor[{{loop.index0}}] = '#33CC33';
+    }
+
+    {% endfor %}
+
+    for (var i = 0; i < traffic_data_length; ++i) {
+      var flightPath = new google.maps.Polyline({
+        path: trafficDataCoordinates[i],
+        geodesic: true,
+        strokeColor: trafficDataColor[i],
+        strokeOpacity: 1.0,
+        strokeWeight: 2,
+        map: map
+      });
+    }
+  }
+</script>
+
+<script async defer
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7twsePKQ3XBR62UaoY1DiROnh_Fxf5CA&callback=initMap">
+</script>
 {% endblock %}
