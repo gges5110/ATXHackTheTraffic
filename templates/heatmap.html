@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block title %}HeatMap{% endblock %}
+{%block head%}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/modules/heatmap.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+<style>
+#HeatMapMain {
+    min-width: 300px;
+    max-width: 600px;
+    height: 350px;
+    margin: 1em auto;
+}
+
+#HeatMapSecond {
+    min-width: 300px;
+    max-width: 600px;
+    height: 350px;
+    margin: 1em auto;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class='container'>
+  <div class='col-md-6' id="HeatMapMain"></div>
+  <div class='col-md-6' id="HeatMapSecond"></div>
+</div>
+
+<script>
+var sTTime = [{% for start_time in startTimeList %}'{{start_time}}'{% if not loop.last %},{% endif %}{% endfor %}]
+
+var intersection_name_Main = [{% for inter in Corridor_intersection[0] %}'{{inter}}'{% if not loop.last %},{% endif %}{% endfor %}]
+
+var intersection_name_Second = [{% for inter in Corridor_intersection[1] %}'{{inter}}'{% if not loop.last %},{% endif %}{% endfor %}]
+
+var data_heatmap_Main = [{% for data in result %}[{{data[0]}},{{data[1]}},{{data[2]}}]{% if not loop.last %},{% endif %}{% endfor %}]
+
+var data_heatmap_Second = [{% for data in result2 %}[{{data[0]}},{{data[1]}},{{data[2]}}]{% if not loop.last %},{% endif %}{% endfor %}]
+
+$('#HeatMapMain').highcharts({
+  chart: {
+    type: 'heatmap',
+    marginTop: 40,
+    marginBottom: 40
+  },
+
+
+  title: {
+    text: 'Heat Map for {{Direction[0]}}'
+  },
+  xAxis: {
+    categories: sTTime
+  },
+
+  yAxis: {
+    categories: intersection_name_Main,
+    title: null
+  },
+
+  colorAxis: {
+    min: -3,
+    max: 3,
+    minColor: '#FFFFFF',
+    maxColor: Highcharts.getOptions().colors[0]
+  },
+
+  legend: {
+    align: 'right',
+    layout: 'vertical',
+    margin: 0,
+    verticalAlign: 'top',
+    y: 25,
+    symbolHeight: 250
+  },
+
+  // tooltip: {
+  //   formatter: function () {
+  //     return '<b>' + this.series.xAxis.categories[this.point.x] + '</b> sold <br><b>' +
+  //     this.point.value + '</b> items on <br><b>' + this.series.yAxis.categories[this.point.y] + '</b>';
+  //   }
+  // },
+
+  series: [{
+    name: 'Easiness to Travel',
+    borderWidth: 1,
+    data: data_heatmap_Main,
+    dataLabels: {
+      enabled: false,
+      color: 'black',
+      style: {
+        textShadow: 'none'
+      }
+    }
+  }]
+});
+$('#HeatMapSecond').highcharts({
+  chart: {
+    type: 'heatmap',
+    marginTop: 40,
+    marginBottom: 40
+  },
+
+
+  title: {
+    text: 'Heat Map for {{Direction[1]}}'
+  },
+  xAxis: {
+    categories: sTTime
+  },
+
+  yAxis: {
+    categories: intersection_name_Second,
+    title: null
+  },
+
+  colorAxis: {
+    min: -3,
+    max: 3,
+    minColor: '#FFFFFF',
+    maxColor: Highcharts.getOptions().colors[0]
+  },
+
+  legend: {
+    align: 'right',
+    layout: 'vertical',
+    margin: 0,
+    verticalAlign: 'top',
+    y: 25,
+    symbolHeight: 250
+  },
+
+  // tooltip: {
+  //   formatter: function () {
+  //     return '<b>' + this.series.xAxis.categories[this.point.x] + '</b> sold <br><b>' +
+  //     this.point.value + '</b> items on <br><b>' + this.series.yAxis.categories[this.point.y] + '</b>';
+  //   }
+  // },
+
+  series: [{
+    name: 'Easiness to Travel',
+    borderWidth: 1,
+    data: data_heatmap_Second,
+    dataLabels: {
+      enabled: false,
+      color: 'black',
+      style: {
+        textShadow: 'none'
+      }
+    }
+  }]
+});
+</script>
+{% endblock %}

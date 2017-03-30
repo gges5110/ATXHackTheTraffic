@@ -58,7 +58,4 @@ def CheckConnection(data_summary,corridor_intersection_all):
                 corridor_intersection.append(corridor_intersection_all[i])
                 next_intersection = corridor_intersection_all[n+1]
                 skip = True
-
     return corridor_intersection
-
-    return
