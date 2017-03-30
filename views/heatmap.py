@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template
-from CorridorTravelTime import corridor_traveltime
+from corridorTravelTime import corridor_traveltime
 
 heatmap = Blueprint('heatmap', __name__)
 
