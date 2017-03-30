@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 import numpy as np
 import csv
 import matplotlib.pyplot as plt
-import CorridorConnection as cc
+import util as cc
 
 def corridor_traveltime(Corridor_name, year_selected, weekday_selected):
     # Configuration
