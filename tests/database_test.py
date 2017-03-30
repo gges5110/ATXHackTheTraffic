@@ -1,4 +1,4 @@
-from context import Base, TravelSensor, Summary, init_db
+from context import TravelSensor, Summary, init_db
 db_session = init_db()
 # Database model definition:
 

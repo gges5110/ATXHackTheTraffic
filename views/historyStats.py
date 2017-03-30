@@ -1,6 +1,6 @@
 from util import console_print, time_list, weekday_list
 from flask import Blueprint, render_template, request
-from database_setup import Base, TravelSensor, Summary
+from database_setup import TravelSensor, Summary
 from sqlalchemy.orm import aliased
 from database_init import db_session
 

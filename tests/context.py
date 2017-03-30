@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # use the command: export PYTHONPATH='.'
 from database_setup import Base, TravelSensor, Summary
 from sqlalchemy import create_engine
-from sqlalchemy.orm import relationship, scoped_session, sessionmaker
+from sqlalchemy.orm import scoped_session, sessionmaker
 
 # Configuration
 def init_db():

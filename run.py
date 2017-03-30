@@ -2,11 +2,7 @@
 # -*- coding: ascii -*-
 
 from flask import Flask, render_template, jsonify, url_for, request, redirect
-import os, util
-
-from sqlalchemy import create_engine, desc
-from sqlalchemy.orm import sessionmaker
-import database_init
+import os
 
 # Routing setup
 from views.index import index
