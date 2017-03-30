@@ -1,6 +1,5 @@
-from database_setup import Base, User, TravelSensor, Summary, db_session
+from database_setup import User, TravelSensor, Summary, db_session
 import pickle
-import math
 from create_map import Map
 
 class Corridor(Map):
@@ -25,4 +24,3 @@ if __name__ == '__main__':
 	output = open('map.dump', 'wb')
 	pickle.dump(m, output)
 	output.close()
-

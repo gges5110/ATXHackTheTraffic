@@ -1,4 +1,4 @@
-from database_setup import Base, User, TravelSensor, Summary
+from database_setup import TravelSensor, Summary
 from database_init import db_session
 import pickle
 

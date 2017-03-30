@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request
-from database_setup import Base, User, TravelSensor, Summary
+from database_setup import Base, TravelSensor, Summary
 from database_init import db_session
 from route import time_prediction
 

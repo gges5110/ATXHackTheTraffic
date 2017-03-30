@@ -1,8 +1,7 @@
 # Configuration
-import os
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Float, create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, scoped_session, sessionmaker
+from sqlalchemy.orm import scoped_session, sessionmaker
 
 Base = declarative_base()
 # End of Configuration
