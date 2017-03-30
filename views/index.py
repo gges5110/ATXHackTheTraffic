@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template
 from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, User, TravelSensor, db_session, Summary
+from database_setup import Base, User, TravelSensor, Summary
+from database_init import db_session
 import util
 
 index = Blueprint('index', __name__)

@@ -1,9 +1,5 @@
-from context import Base, TravelSensor, Summary, db_session
-
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, scoped_session, sessionmaker
-from sqlalchemy import create_engine
-
+from context import Base, TravelSensor, Summary, init_db
+db_session = init_db()
 # Database model definition:
 
 # class TravelSensor(Base):
@@ -52,7 +48,8 @@ print ""
 print "Fetch the first sensor with latitude greater than", lat
 travelSensors_test3 = db_session.query(TravelSensor).filter(TravelSensor.LATITUDE > lat).first()
 # Notice that if you use .first(), it will be an object and not a list.
-print travelSensors_test3.READER_ID, travelSensors_test3.LATITUDE, travelSensors_test3.LONGITUDE
+if travelSensors_test3 is not None:
+    print travelSensors_test3.READER_ID, travelSensors_test3.LATITUDE, travelSensors_test3.LONGITUDE
 
 print ""
 # Test for Summary data model

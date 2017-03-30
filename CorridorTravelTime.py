@@ -1,4 +1,4 @@
-from context import Base, TravelSensor, Summary
+from database_setup import Base, TravelSensor, Summary
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, scoped_session, sessionmaker
 from sqlalchemy import create_engine
@@ -112,7 +112,7 @@ def corridor_traveltime(Corridor_name, year_selected, weekday_selected):
 
         Average_traveltime.append(average_traveltime)
         Normalized_traveltime.append(zscore_traveltime)
-    
+
     return [Normalized_traveltime, Average_traveltime, Direction, Corridor_intersection]
     # plot results
     """plt.xlim(0,95)

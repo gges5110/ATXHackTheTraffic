@@ -6,7 +6,7 @@ import os, util
 
 from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, User, TravelSensor, Summary
+import database_init
 
 # Routing setup
 from views.index import index
@@ -29,5 +29,4 @@ if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     app.debug = True
     port = int(os.environ.get("PORT", 8000))
-
     app.run(host = '0.0.0.0', port = port)

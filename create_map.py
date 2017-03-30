@@ -1,4 +1,5 @@
-from database_setup import Base, User, TravelSensor, Summary, db_session
+from database_setup import Base, User, TravelSensor, Summary
+from database_init import db_session
 import pickle
 
 class Map:
@@ -28,4 +29,3 @@ if __name__ == '__main__':
 	output = open('map.dump', 'wb')
 	pickle.dump(m, output)
 	output.close()
-

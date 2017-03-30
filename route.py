@@ -1,4 +1,5 @@
-from database_setup import Base, User, TravelSensor, Summary, db_session
+from database_setup import Base, User, TravelSensor, Summary
+from database_init import db_session
 from create_map import Map, get_map_from_file
 
 class Route:
