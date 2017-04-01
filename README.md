@@ -4,7 +4,18 @@
 
 This is a project for travel time prediction in Austin, TX using the dataset provided by the City of Austin.
 
-# Server Routes
+# Features
+## Travel Time Prediction
+![Image of travelTimePrediction](https://github.com/gges5110/ATXHackTheTraffic/blob/master/website_images/travelTimePrediction.png)
+
+## History Stats
+![Image of historyStats](https://github.com/gges5110/ATXHackTheTraffic/blob/master/website_images/historyStats.png)
+
+## Traffic Heat Map
+![Image of trafficHeatMap](https://github.com/gges5110/ATXHackTheTraffic/blob/master/website_images/trafficHeatMap.png)
+
+# Technical Details
+## Server Routes
 They are stored inside [views](https://github.com/gges5110/ATXHackTheTraffic/tree/master/views) folder. To add a new route, 
   1. Add a new .py file in views/ 
   2. Import it into run.py
@@ -21,7 +32,7 @@ def routeName_function():
     return "The new route page."
 ```
 
-# Tests
+## Tests
 Tests are put in [tests](https://github.com/gges5110/ATXHackTheTraffic/tree/master/tests) folder. 
 If you want to import something from the top level module, add it to [context.py](https://github.com/gges5110/ATXHackTheTraffic/blob/master/tests/context.py)
 and then import to your test file.
