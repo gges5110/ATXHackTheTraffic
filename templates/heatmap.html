@@ -23,12 +23,16 @@
 {% endblock %}
 
 {% block content %}
-<div class='container'>
-  <div class='col-md-6' id="HeatMapMain"></div>
-  <div class='col-md-6' id="HeatMapSecond"></div>
+<div class='ui two column grid'>
+  <div class='column' id="HeatMapMain"></div>
+  <div class='column' id="HeatMapSecond"></div>
 </div>
 
 <script>
+$(document).ready(function () {
+  $(".item").removeClass("active");//this will remove the active class from previously active menu item
+  $('#heatmap').addClass('active');
+});
 var sTTime = [{% for start_time in startTimeList %}'{{start_time}}'{% if not loop.last %},{% endif %}{% endfor %}]
 
 var intersection_name_Main = [{% for inter in Corridor_intersection[0] %}'{{inter}}'{% if not loop.last %},{% endif %}{% endfor %}]

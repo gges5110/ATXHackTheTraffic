@@ -1,7 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Index{% endblock %}
 
-{%block head%}
+{% block head %}
 <style>
 #cover {
   margin: auto;
@@ -14,18 +13,24 @@
 {% endblock %}
 
 {% block content %}
-<div class='container'>
-  <img id='cover' src={{ url_for('static', filename='Pic/Cover.jpg') }} alt="Mountain View" style="width:304px;height:228px;">
+<div class='ui text container'>
+  <img id='cover' src={{ url_for('static', filename='Pic/Cover.jpg') }} alt="Mountain View" style="width:600px;height:400px;">
   <div class = 'row'>
     <h2>Goal of the Project:</h2>
-    <div class = 'col-4'>
+
     <h4>Travel Time Prediction:</h4>
       Using historical bluetooth travel time data (2014 to 2016) to predict the travel time.
-    </div>
-    <div class = 'col-4'>
+
     <h4>Corridor Analysis:</h4>
       Using historical bluetooth travel time data to see how the congestion grows in the corridor
-    </div>
+
   </div>
 </div>
+
+<script type="text/javascript">
+$(document).ready(function () {
+  $(".item").removeClass("active");//this will remove the active class from previously active menu item
+  $('#index').addClass('active');
+});
+</script>
 {% endblock %}
