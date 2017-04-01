@@ -8,24 +8,22 @@
       src="https://code.jquery.com/jquery-3.1.1.min.js"
       integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
       crossorigin="anonymous"></script>
-    <title>{% block title %}{% endblock %} - ATX Hack the Traffic</title>
+    <title>{% block title %}{% endblock %} ATX Hack the Traffic</title>
     {% block head %}
     {% endblock %}
   </head>
 
 
   <body>
-    <div class="ui five item menu" style="margin-top: 0px">
-      <div class="ui container">
-        <a class="header item" href="/" id="index">ATX Hack the Traffic</a>
-        <a class="item" href="/travelTimePrediction" id="travelTimePrediction">Travel Time Prediction</a>
-        <a class="item" href="/historyStats" id="historyStats">History Stats</a>
-        <a class="item" href="/heatmap" id="heatmap">Heat Map</a>
-        <a class="item" href="/aboutUs" id="aboutUs">About Us</a>
-      </div>
-    </div>
-
+    <div class="" style="height:30px;"></div>
     <div class="ui container">
+      <div class="ui four item menu" >
+          <a class="header item" href="/" id="index">ATX Hack the Traffic</a>
+          <a class="item" href="/travelTimePrediction" id="travelTimePrediction">Travel Time Prediction</a>
+          <a class="item" href="/historyStats" id="historyStats">History Stats</a>
+          <a class="item" href="/heatmap" id="heatmap">Heat Map</a>
+      </div>
+
       {% block content %}
       {% endblock %}
     </div>

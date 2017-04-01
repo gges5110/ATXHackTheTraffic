@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Travel Time Prediction{% endblock %}
+{% block title %}Travel Time Prediction -{% endblock %}
 {% block head %}
 <style>
   /* Always set the map height explicitly to define the size of the div
@@ -22,45 +22,58 @@
   <div class="three wide column">
     <form class="ui form" action="/travelTimePrediction" method="POST">
       <div class="row">
-        <div class="field" id='origin_point'>
-      <label for="origin">Select Origin:</label>
-      <select class="ui dropdown" name="origin" onchange="origin_chg(this)">
-        {% for sensor in travelSensors %}
-        {% if origin and sensor.READER_ID == origin %}
-        <option value='{{sensor.READER_ID}}' selected="selected">{{sensor.READER_ID}}</option>
-        {% else %}
-        <option value='{{sensor.READER_ID}}'>{{sensor.READER_ID}}</option>
-        {% endif %}
-        {% endfor %}
-      </select>
-    </div>
-
-    <div class="field" id='destination_point'>
-      <label for="destination">Select Destination:</label>
-      <select class="ui dropdown" name="destination" onchange="dest_chg(this)">
-        {% for sensor in travelSensors %}
-        {% if loop.index == 1 %}
-          <option value='{{sensor.READER_ID}}' disabled>{{sensor.READER_ID}}</option>
-        {% elif destination and sensor.READER_ID == destination %}
+          <div class="field" id='origin_point'>
+        <label for="origin">Select Origin:</label>
+        <select class="ui dropdown" name="origin" onchange="origin_chg(this)">
+          {% for sensor in travelSensors %}
+          {% if origin and sensor.READER_ID == origin %}
           <option value='{{sensor.READER_ID}}' selected="selected">{{sensor.READER_ID}}</option>
-        {% else %}
+          {% else %}
           <option value='{{sensor.READER_ID}}'>{{sensor.READER_ID}}</option>
-        {% endif %}
-        {% endfor %}
-      </select>
-    </div>
+          {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="field" id='destination_point'>
+        <label for="destination">Select Destination:</label>
+        <select class="ui dropdown" name="destination" onchange="dest_chg(this)">
+          {% for sensor in travelSensors %}
+          {% if loop.index == 1 %}
+            <option value='{{sensor.READER_ID}}' disabled>{{sensor.READER_ID}}</option>
+          {% elif destination and sensor.READER_ID == destination %}
+            <option value='{{sensor.READER_ID}}' selected="selected">{{sensor.READER_ID}}</option>
+          {% else %}
+            <option value='{{sensor.READER_ID}}'>{{sensor.READER_ID}}</option>
+          {% endif %}
+          {% endfor %}
+        </select>
+      </div>
 
       <div class="field">
-      <label for="start_time">Select Start Time:</label>
-      <select class="ui dropdown" name="start_time">
-        {% for startTime in startTimeList %}
-        {% if start_time and loop.index == start_time %}
-          <option value='{{loop.index}}' selected="selected">{{startTime}}</option>
-        {% else %}
-          <option value='{{loop.index}}'>{{startTime}}</option>
-        {% endif %}
-        {% endfor %}
+        <label for="start_time">Select Start Time:</label>
+        <select class="ui dropdown" name="start_time">
+          {% for startTime in startTimeList %}
+          {% if start_time and loop.index == start_time %}
+            <option value='{{loop.index}}' selected="selected">{{startTime}}</option>
+          {% else %}
+            <option value='{{loop.index}}'>{{startTime}}</option>
+          {% endif %}
+          {% endfor %}
       </select>
+
+      <div class="field">
+        <label for="weekday_input">Select Weekday:</label>
+        <select class="ui dropdown" name="weekday" id="weekday_input">
+          {% for _weekday in weekdayList %}
+            {% if weekday and loop.index0 == weekday %}
+              <option value='{{loop.index0}}' selected="selected">{{_weekday}}</option>
+            {% else %}
+              <option value='{{loop.index0}}'>{{_weekday}}</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+      </div>
 
     </div>
       <input type="submit" class="ui primary button" value="Estimate">
@@ -136,7 +149,7 @@
     var flightPath = new google.maps.Polyline({
       path: flightPlanCoordinates,
       geodesic: true,
-      strokeColor: '#FF0000',
+      strokeColor: '#33CC33',
       strokeOpacity: 1.0,
       strokeWeight: 2
     });

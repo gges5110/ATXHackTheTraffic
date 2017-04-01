@@ -27,7 +27,7 @@ def historyStats_function():
         weekday = int(weekday)
 
     time = request.args.get('time')
-    start_time = 0
+    start_time = 37
     if time is None:
         time = 0
     else:
