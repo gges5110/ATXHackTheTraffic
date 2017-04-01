@@ -4,6 +4,7 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <link href="{{ url_for('static', filename='styles/css/bootstrap.min.css')}}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/css/semantic.min.css')}}">
     {% block head %}
     <!-- <link rel="stylesheet" href="style.css" /> -->
     <title>{% block title %}{% endblock %} - ATX Hack the Traffic</title>
@@ -56,7 +57,11 @@
       {% endblock %}
     </div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="{{url_for('static', filename='styles/js/bootstrap.min.js')}}"></script>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
+    <script
+      src="https://code.jquery.com/jquery-3.1.1.min.js"
+      integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+      crossorigin="anonymous"></script>
+    <script src="{{url_for('static', filename='styles/js/semantic.min.js')}}"></script>
   </body>
 </html>
