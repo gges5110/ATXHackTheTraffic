@@ -10,6 +10,10 @@ travelTimePrediction = Blueprint('travelTimePrediction', __name__)
 def travelTimePrediction_function():
     travelSensors = db_session.query(TravelSensor).all()
     startTimeList = time_list()
+    time_pre = None
+    origin = 'congress_oltorf'
+    destination = 'congress_11th'
+    start_time = 37
 
     if request.method == 'POST':
         origin = request.form['origin']
@@ -17,7 +21,7 @@ def travelTimePrediction_function():
         start_time = int(request.form['start_time'])
         minutes = (start_time - 1) * 15
         time_pre = time_prediction.findRoute(origin, destination, minutes, 0)
-        return render_template("travelTimePrediction.html", travelSensors=travelSensors, time_pre=time_pre, startTimeList=startTimeList, origin = origin, destination = destination, start_time = start_time)
-        # return render_template("travelTimePrediction.html", travelSensors=travelSensors, startTimeList=startTimeList, origin = origin, destination = destination, start_time = start_time)
-    else:
-        return render_template("travelTimePrediction.html", travelSensors=travelSensors, time_pre=None, startTimeList=startTimeList)
+        if time_pre['time'] != -1:
+            time_pre['time'] = round(time_pre['time']/60, 2)
+
+    return render_template("travelTimePrediction.html", travelSensors=travelSensors, time_pre=time_pre, startTimeList=startTimeList, origin = origin, destination = destination, start_time = start_time)

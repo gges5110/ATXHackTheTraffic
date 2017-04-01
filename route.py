@@ -111,11 +111,14 @@ class Route:
 		# backtracking
 		route = [t]
 		ptr = t
-		while ptr != s:
+		while ptr != s and ptr in P:
 			ptr = P[ptr]
 			route.insert(0,ptr)
 
-		return {'route': route, 'coord': self.convertCoord(route), 'time': D[t]}
+		if t in D:
+			return {'route': route, 'coord': self.convertCoord(route), 'time': D[t]}
+		else:
+			return {'route': route, 'coord': self.convertCoord(route), 'time': -1}
 
 	def findRoutes(self, s, t, dtime, weekday):
 		result = [0]*5
@@ -146,7 +149,7 @@ if __name__ == '__main__':
 	#print R.findRoute(0,3,0,0)
 	print "here"
 	dtime = 16*60*60+30*60
-	results= R.findRoutes('lamar_12th', 'lamar_barton_springs', dtime, 0)
+	results= R.findRoutes('2nd_san_jacinto', '5th_campbell', dtime, 0)
 	print results
 	#print [result['time'] for result in results]
 	#print R.convertCoord(result['route'])

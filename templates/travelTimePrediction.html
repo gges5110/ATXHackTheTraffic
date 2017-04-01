@@ -76,10 +76,12 @@
 
     <div class="row">
       {% if time_pre %}
-        <!-- {{time_pre.route}}
-        {{time_pre['coord']}} -->
-        Estimate time: {{ time_pre.time / 60 }} (minutes)
+        {% if time_pre.time == -1 %}
+        Estimate time: NaN (minutes)
+        {% else %}
+        Estimate time: {{ time_pre.time }} (minutes)
         {% endif %}
+      {% endif %}
     </div>
   </div>
   <script>
