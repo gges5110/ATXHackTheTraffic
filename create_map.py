@@ -1,6 +1,6 @@
 from database_setup import TravelSensor, Summary
 from database_init import db_session
-import pickle
+import cPickle as pickle
 
 class Map:
 	READER_IDs = []
@@ -15,17 +15,19 @@ class Map:
 			#print sensor
 			#print self.ADJ_INTERSECTIONS[sensor]
 
-def get_map_from_file():
-	infile = open('map.dump','rb')
-	return pickle.load(infile)
+	def get_map_from_file(self):
+		ADJ_INTERSECTIONS = pickle.load(open('map.dump','rb'))
+		self.ADJ_INTERSECTIONS = ADJ_INTERSECTIONS
 
+	def create_map_cache(self):
+		self.get_map_from_database()
+		output = open('map.dump', 'wb')
+		pickle.dump(m.ADJ_INTERSECTIONS, output)
+		output.close()
 
 if __name__ == '__main__':
 	m = Map()
-	m.get_map_from_database()
-
+	# m.get_map_from_database()
+	m.get_map_from_file()
 	print m.ADJ_INTERSECTIONS
-
-	output = open('map.dump', 'wb')
-	pickle.dump(m, output)
-	output.close()
+	# m.create_map_cache()

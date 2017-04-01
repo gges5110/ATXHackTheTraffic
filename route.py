@@ -1,6 +1,6 @@
-from database_setup import Base, User, TravelSensor, Summary
+from database_setup import Base, TravelSensor, Summary
 from database_init import db_session
-from create_map import Map, get_map_from_file
+from create_map import Map
 
 class Route:
 
@@ -10,7 +10,7 @@ class Route:
 		travelSensors = db_session.query(TravelSensor).all()
 		self.travelSensors = {x.READER_ID:(x.LATITUDE, x.LONGITUDE) for x in travelSensors}
 		self.myMap = Map()
-		self.myMap.get_map_from_database()
+		self.myMap.get_map_from_file()
 
 	def convertCoord(self, route):
 		return [self.travelSensors[n] for n in route]
@@ -139,7 +139,6 @@ class Route:
 		return result
 
 time_prediction = Route()
-
 
 if __name__ == '__main__':
 
