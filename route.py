@@ -1,6 +1,9 @@
 from database_setup import Base, TravelSensor, Summary
-from database_init import db_session
+from database_init import db_session, engine
 from create_map import Map
+import sys
+from Queue import PriorityQueue
+from datetime import datetime
 
 class Route:
 
@@ -22,19 +25,8 @@ class Route:
 			return self.myMap.ADJ_INTERSECTIONS[node]
 
 	def getTravelTime(self, s, t, dtime, weekday):
-
-		beg_day = 0
-		end_day = 0
-
-		if weekday in [0,1,2,3,4]:
-			beg_day = 0
-			end_day = 4
-		else:
-			beg_day = 5
-			end_day = 6
-
 		# first attempt
-		summary = db_session.query(Summary).filter(
+		summary = db_session.query(Summary.Year, Summary.Avg_Travel_Time).filter(
 			Summary.Origin == s,
 			Summary.Destination == t,
 			Summary.Weekday == weekday,
@@ -42,17 +34,26 @@ class Route:
 			Summary.Time <= dtime/60+60,
 			).order_by(Summary.Time).all()
 
-
 		if len(summary) == 0:
 			if dtime >= 23*3600:  # after 11pm, look at the next day
-				summary = db_session.query(Summary).filter(
+				summary = db_session.query(Summary.Year, Summary.Avg_Travel_Time).filter(
 					Summary.Origin == s,
 					Summary.Destination == t,
 					Summary.Weekday == weekday+1
 					).order_by(Summary.Time).all()
 
 		if len(summary) == 0:
-			summary = db_session.query(Summary).filter(
+			beg_day = 0
+			end_day = 0
+
+			if weekday in [0,1,2,3,4]:
+				beg_day = 0
+				end_day = 4
+			else:
+				beg_day = 5
+				end_day = 6
+
+			summary = db_session.query(Summary.Year, Summary.Avg_Travel_Time).filter(
 				Summary.Origin == s,
 				Summary.Destination == t,
 				Summary.Weekday >= beg_day,
@@ -73,7 +74,7 @@ class Route:
 
 		for ss in summary:
 			if ss.Year not in looked_years:
-				looked_years |= set([ss.Year])
+				looked_years.add(ss.Year)
 				total += ss.Avg_Travel_Time
 
 		#print {'s':s, 't':t, 'dtime':dtime, 'total':total, 'n': len(looked_years)}
@@ -82,17 +83,20 @@ class Route:
 
 	# weekday: Monday is 0
 	def findRoute(self, s, t, dtime, weekday):
+		travelTime = {}
+
 		# Priority queue
 		Q = {s:dtime}
 		# Dijkstra labels
 		D = {s:dtime}
 		P = {s:0}
 		visited = set()
-
+		print "find route!"
+		sys.stdout.flush()
 		while Q:
 			u = min(Q, key=Q.get)
 			Q.pop(u)
-			visited |= set([u])
+			visited.add(u)
 
 			if u == t:
 				break;
@@ -102,7 +106,10 @@ class Route:
 				if v in visited:
 					continue
 
-				newt =  D[u] + self.getTravelTime(u,v,D[u],weekday)
+				if (u,v,D[u],weekday) not in travelTime:
+					travelTime[(u,v,D[u],weekday)] = self.getTravelTime(u,v,D[u],weekday)
+
+				newt =  D[u] + travelTime[(u,v,D[u],weekday)]
 				if (v not in D) or (newt < D[v]):
 					Q[v] = newt
 					D[v] = newt
@@ -138,18 +145,21 @@ class Route:
 				weekday = (weekday + 1) % 7
 
 			result[i] = self.findRoute(s, t, dtime, weekday)
-
 		return result
 
 time_prediction = Route()
 
 if __name__ == '__main__':
-
+	start_time = datetime.now()
 	R = Route()
-	#print R.findRoute(0,3,0,0)
-	print "here"
 	dtime = 16*60*60+30*60
-	results= R.findRoutes('2nd_san_jacinto', '5th_campbell', dtime, 0)
+	# results= R.findRoutes('2nd_san_jacinto', '5th_campbell', dtime, 0)
+	results = R.findRoutes('congress_oltorf', 'congress_11th', dtime, 0)
 	print results
+	end_time = datetime.now()
+	total_time = end_time - start_time
+	print "Start time:", str(start_time)
+	print "End time:", str(end_time)
+	print "Total time:", total_time.microseconds, "(us)"
 	#print [result['time'] for result in results]
 	#print R.convertCoord(result['route'])

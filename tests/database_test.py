@@ -1,31 +1,7 @@
 from context import TravelSensor, Summary, init_db
 db_session = init_db()
-# Database model definition:
+# Database model definition in database_setup.py
 
-# class TravelSensor(Base):
-#     __tablename__ = 'TravelSensor'
-#
-#     READER_ID = Column(String(250), nullable=False)
-#     ATD_SENSOR_ID = Column(Integer, primary_key=True)
-#     PRIMARY_ST_SEGMENT_ID = Column(Integer, nullable=False)
-#     SIGNAL_ENG_AREA = Column(String(250), nullable=False)
-#     LOCATION_NAME = Column(String(250), nullable=False)
-#     PRIMARY_ST = Column(String(250), nullable=False)
-#     CROSS_ST = Column(String(250), nullable=False)
-#     LATITUDE = Column(Float, nullable=False)
-#     LONGITUDE = Column(Float, nullable=False)
-
-# class Summary(Base):
-#     __tablename__ = 'Summary'
-#
-#     index = Column(Integer, primary_key=True)
-#     Avg_Travel_Time = Column(Float, nullable=False)
-#     Destination = Column(String(250), nullable=False)
-#     Origin = Column(String(250), nullable=False)
-#     Sample_count = Column(Integer, nullable=False)
-#     Time = Column(Integer, nullable=False)
-#     Weekday = Column(Integer, nullable=False)
-#     Year = Column(Integer, nullable=False)
 
 # Test for TravelSensor data model
 travelSensorsCount = db_session.query(TravelSensor).count()
@@ -35,13 +11,13 @@ travelSensors_test1 = db_session.query(TravelSensor).all()
 for sensor in travelSensors_test1:
     print sensor.READER_ID, sensor.LATITUDE, sensor.LONGITUDE
 
-primary_st = "WILLIAM CANNON DR"
-print ""
-print "Travel Sensor with PRIMARY_ST =", primary_st
-travelSensors_test2 = db_session.query(TravelSensor).filter_by(PRIMARY_ST=primary_st).all()
-# If you use .all(), you will get a list of TravelSensor objects.
-for sensor in travelSensors_test2:
-    print sensor.READER_ID, sensor.LATITUDE, sensor.LONGITUDE
+# primary_st = "WILLIAM CANNON DR"
+# print ""
+# print "Travel Sensor with PRIMARY_ST =", primary_st
+# travelSensors_test2 = db_session.query(TravelSensor).filter_by(PRIMARY_ST=primary_st).all()
+# # If you use .all(), you will get a list of TravelSensor objects.
+# for sensor in travelSensors_test2:
+#     print sensor.READER_ID, sensor.LATITUDE, sensor.LONGITUDE
 
 lat = 30.3
 print ""
