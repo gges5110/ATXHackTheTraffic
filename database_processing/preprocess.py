@@ -1,9 +1,9 @@
 import pandas as pd
 import time as t
 import sys
-from sqlalchemy import create_engine
-
-engine = create_engine('sqlite:///summary.db', echo=True)
+import csv, sqlite3
+import os.path
+import numpy as np
 
 # Return a dataframe with Origin, Destination, Time, Weekday, Year, Samples
 # and Average time*Sample, total of 7 columns
@@ -58,25 +58,84 @@ def preprocess(df):
 
     df4 = pd.DataFrame({"Origin": df3.Origin, "Destination": df3.Destination,
                         'Year': df3.Year, 'Weekday': df3.Weekday, 'Time': df3.Time,
-                        'Avg_travel_time': avg_travel_time.apply(int), 'Sample_count': df3.Total_sample})
+                        'Avg_travel_time': avg_travel_time.apply(int)})
     return df4
 
 if __name__ == "__main__":
-    start_time = t.time()
+    # start_time = t.time()
+    # Process Travel_Sensors.csv
+    con = sqlite3.connect("database.db")
+    cur = con.cursor()
 
-    # Download .csv file from https://data.austintexas.gov/dataset/Travel-Sensors-Match-Summary-Records/v7zg-5jg9/data
-    path = sys.argv[1]
-    df = pd.read_csv(path)
+    #TODO make a promt here to confirm if user really wants to create a new table.
 
-    df4 = preprocess(df)
-    # df4.to_csv('preprocessed_summary.csv', index=False)
-    df4.to_sql('Summary', index=True, con=engine)
-    # print df4
-    print "Finished preprocessing data!"
+    # Drop table if the table exists
+    drop_travel_sensor_table_query = "DROP TABLE IF EXISTS TravelSensor"
+    cur.execute(drop_travel_sensor_table_query)
 
-    duration = t.time() - start_time
-    print "Total run time = " + str(duration) + "s\n"
+    create_travel_sensor_table_query = "              \
+        CREATE TABLE IF NOT EXISTS TravelSensor(\
+        ID          INT PRIMARY KEY NOT NULL,   \
+        READER_ID   TEXT            NOT NULL,   \
+        LATITUDE    REAL            NOT NULL,   \
+        LONGITUDE   REAL            NOT NULL    \
+        )                                       \
+    "
+    cur.execute(create_travel_sensor_table_query)
 
+    travel_sensors_csv = "/../Travel_Sensors.csv"
+    with open(os.path.dirname(__file__) + travel_sensors_csv,'rb') as fin: # `with` statement available in 2.5+
+        # csv.DictReader uses first line in file for column headings by default
+        data_row = csv.DictReader(fin) # comma is default delimiter
+        to_db = [(i['ATD_SENSOR_ID'], i['READER_ID'], i['LATITUDE'], i['LONGITUDE']) for i in data_row]
+
+    cur.executemany("INSERT INTO TravelSensor (ID, READER_ID, LATITUDE, LONGITUDE) VALUES (?, ?, ?, ?);", to_db)
+    con.commit()
+
+    drop_summary_table_query = "DROP TABLE IF EXISTS Summary"
+    cur.execute(drop_summary_table_query)
+
+    create_summary_table_query = "          \
+        CREATE TABLE IF NOT EXISTS Summary( \
+        Id INT PRIMARY KEY NOT NULL,        \
+        Avg_Travel_Time REAL NOT NULL,      \
+        Destination TEXT NOT NULL,          \
+        Origin TEXT NOT NULL,               \
+        Time INT NOT NULL,                  \
+        Weekday INT NOT NULL,               \
+        Year INT NOT NULL                   \
+        )                                   \
+    "
+    cur.execute(create_summary_table_query)
+
+    summary_csv = "/../preprocessed_summary.csv"
+    if not os.path.isfile(os.path.dirname(__file__) + summary_csv) :
+        print "Cannot find preprocessed_summary.csv, creating a new one from TMSR..."
+        # Download .csv file from https://data.austintexas.gov/dataset/Travel-Sensors-Match-Summary-Records/v7zg-5jg9/data
+        TMSR_csv = "/../Bluetooth_Travel_Sensors_-Traffic_Match_Summary_Records__TMSR_.csv"
+
+        df = pd.read_csv(os.path.dirname(__file__) + TMSR_csv, dtype={
+            'timestamp': np.object,
+            'average_travel_time_seconds': np.int64,
+            'number_samples': np.int64,
+            'origin_reader_identifier': np.object,
+            'destination_reader_identifier': np.object
+            })
+
+        df4 = preprocess(df)
+        df4.to_csv(os.path.dirname(__file__) + summary_csv, index=True, index_label="index")
+        print "Finished preprocessing data!"
+
+    with open(os.path.dirname(__file__) + summary_csv,'rb') as fin: # `with` statement available in 2.5+
+        # csv.DictReader uses first line in file for column headings by default
+        data_row = csv.DictReader(fin) # comma is default delimiter
+        # TODO use number index instead of string in i[]
+        to_db = [(i['index'], i['Avg_travel_time'], i['Destination'], i['Origin'], i['Time'], i['Weekday'], i['Year']) for i in data_row]
+
+    cur.executemany("INSERT INTO Summary (Id, Avg_Travel_Time, Destination, Origin, Time, Weekday, Year) VALUES (?, ?, ?, ?, ?, ?, ?);", to_db)
+    con.commit()
+
+    con.close()
 
     # Column names and data types for Bluetooth_Travel_Sensors_-Traffic_Match_Summary_Records__TMSR.csv
     # record_id                         object
@@ -95,4 +154,3 @@ if __name__ == "__main__":
     # summary_interval_minutes           int64
     # number_samples                     int64
     # standard_deviation               float64
-

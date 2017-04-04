@@ -1,35 +1,15 @@
 # Configuration
-from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Float, create_engine
+from sqlalchemy import Column, ForeignKey, Integer, String, Float
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import scoped_session, sessionmaker
 
 Base = declarative_base()
 # End of Configuration
-
-# Class
-class User(Base):
-    # Table
-    __tablename__ = 'user'
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
-    email = Column(String(250), nullable=False)
-    picture = Column(String(250))
-
-    @property
-    def serialize(self):
-        return {
-            'id' : self.id,
-            'name' : self.name,
-            'email' : self.email,
-            'picture' : self.picture
-        }
 
 # Class Summary
 class Summary(Base):
     __tablename__ = 'Summary'
 
-    index = Column(Integer, primary_key=True)
+    Id = Column(Integer, primary_key=True, nullable=False)
     Avg_Travel_Time = Column(Float, nullable=False)
     Destination = Column(String(250), nullable=False)
     Origin = Column(String(250), nullable=False)
@@ -41,7 +21,7 @@ class Summary(Base):
     @property
     def serialize(self):
         return {
-            'index': self.index,
+            'Id': self.Id,
             'Avg_Travel_Time': self.Avg_Travel_Time,
             'Destination': self.Destination,
             'Origin': self.Origin,
@@ -54,43 +34,16 @@ class Summary(Base):
 # Class
 class TravelSensor(Base):
     __tablename__ = 'TravelSensor'
-
+    ID = Column(Integer, primary_key=True, nullable=False)
     READER_ID = Column(String(250), nullable=False)
-    ATD_SENSOR_ID = Column(Integer, primary_key=True)
-    PRIMARY_ST_SEGMENT_ID = Column(Integer, nullable=False)
-    SIGNAL_ENG_AREA = Column(String(250), nullable=False)
-    LOCATION_NAME = Column(String(250), nullable=False)
-    PRIMARY_ST = Column(String(250), nullable=False)
-    CROSS_ST = Column(String(250), nullable=False)
     LATITUDE = Column(Float, nullable=False)
     LONGITUDE = Column(Float, nullable=False)
 
     @property
     def serialize(self):
         return {
+            'id': self.ID,
             'reader_id': self.READER_ID,
-            'atd_sensor_id': self.ATD_SENSOR_ID,
-            'primary_st_segment_id': self.PRIMARY_ST_SEGMENT_ID,
-            'signal_eng_area': self.SIGNAL_ENG_AREA,
-            'location_name': self.LOCATION_NAME,
-            'primary_st': self.PRIMARY_ST,
-            'cross_st': self.CROSS_ST,
             'latitude': self.LATITUDE,
             'longtitude': self.LONGITUDE
-        }
-
-# Class
-class Catalog(Base):
-    # Table
-    __tablename__ = 'catalog'
-
-    # Mapper
-    id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
-
-    @property
-    def serialize(self):
-        return {
-            'name' : self.name,
-            'id' : self.id
         }

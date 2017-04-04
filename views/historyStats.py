@@ -8,7 +8,6 @@ historyStats = Blueprint('historyStats', __name__)
 
 @historyStats.route("/historyStats", methods=['GET'])
 def historyStats_function():
-
     # Generate display strings for frontend.
     timeList = time_list()
     weekdayList = weekday_list()
@@ -16,7 +15,7 @@ def historyStats_function():
     # Parse request params and set default values.
     year = request.args.get('year')
     if year is None:
-        year = 2016
+        year = 2017
     else:
         year = int(year)
 
@@ -27,7 +26,7 @@ def historyStats_function():
         weekday = int(weekday)
 
     time = request.args.get('time')
-    start_time = 0
+    start_time = 37
     if time is None:
         time = 0
     else:
@@ -45,6 +44,8 @@ def historyStats_function():
 
     traffic_list = result.all()
     console_print("result count: " + str(result.count()))
-    console_print("result count: " + str(result.column_descriptions))
+    # console_print("result count: " + str(db_session.query(TravelSensor).all()))
+
+    # console_print("result count: " + str(result.column_descriptions))
 
     return render_template("historyStats.html", traffic_list=traffic_list, timeList=timeList, start_time=start_time, weekdayList=weekdayList, weekday=weekday)
