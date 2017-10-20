@@ -4,6 +4,28 @@
 
 This is a project for travel time prediction in Austin, TX using the dataset provided by the City of Austin.
 
+## Quick Overview
+Make sure you have [Python 2.7](https://www.python.org/download/releases/2.7/) installed on your system.
+### Install Dependencies
+```
+pip install -r requirements.txt
+```
+
+### Database Setup
+1. Download Bluetooth Travel Sensor data from [City of Austin Website](https://data.austintexas.gov/Transportation-and-Mobility/Bluetooth-Travel-Sensors-Traffic-Match-Summary-Rec/v7zg-5jg9/data)
+2. Put ```Travel_Sensors.csv``` and ```Bluetooth_Travel_Sensors_-Traffic_Match_Summary_Records__TMSR_.csv``` in the project folder.
+
+```sh
+cd database_processing
+python preprocess.py
+```
+
+### Start Server
+```python
+python run.py
+```
+Open http://localhost:8000/ to see the app running.
+
 # Features
 ### Travel Time Prediction
 Select the origin, destination and time to see how long it takes to get there.
